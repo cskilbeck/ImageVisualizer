@@ -47,10 +47,11 @@ namespace ImageVisualizer
 
         //////////////////////////////////////////////////////////////////////
 
-        public static void TestShowVisualizer(Image imageToVisualize)
+        public static void TestShowVisualizer(Image imageToVisualize, Form parent)
         {
             VisualizerDevelopmentHost visualizerHost = new VisualizerDevelopmentHost(imageToVisualize, typeof(Visualizer));
             visualizerHost.ShowVisualizer();
+            parent.Close();
         }
     }
 }

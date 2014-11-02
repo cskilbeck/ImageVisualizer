@@ -9,6 +9,7 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 //////////////////////////////////////////////////////////////////////
@@ -73,30 +74,22 @@ namespace ImageVisualizer
         public ImageForm(Image image)
         {
             InitializeComponent();
-            var borderWidth = (Width - ClientSize.Width);
-            var borderHeight = (Height - ClientSize.Height) + SystemInformation.CaptionHeight + SystemInformation.BorderSize.Height;
-            this.Width = image.Width + borderWidth;
-            this.Height = image.Height + borderHeight;
-            this.StartPosition = FormStartPosition.Manual;
+            pictureBox1.Size = new Size(Math.Max(image.Width, 100), Math.Max(image.Height, 100));
+            pictureBox1.Location = new Point(0, 0);
+            ClientSize = new Size(pictureBox1.Width, pictureBox1.Height + SystemInformation.MenuHeight + SystemInformation.HorizontalResizeBorderThickness);
+            StartPosition = FormStartPosition.Manual;
             var mousePos = Cursor.Position;
-            this.Location = new Point(mousePos.X - this.Width / 2, mousePos.Y - this.Height / 2);
+            Location = new Point(mousePos.X - this.Width / 2, mousePos.Y - this.Height / 2);
             pictureBox1.MouseWheel += pictureBox_MouseWheel;
             pictureBox1.MouseHover += pictureBox_MouseHover;
             pictureBox1.MouseDown += pictureBox1_MouseDown;
             pictureBox1.MouseUp += pictureBox1_MouseUp;
             pictureBox1.MouseMove += pictureBox1_MouseMove;
-            this.Shown += ImageForm_Shown;
             string fmt = image.PixelFormat.ToString().Replace("Format", "");
             Text = String.Format("{0}x{1},{2}", image.Width, image.Height, fmt);
             currentImage = image;
             BuildPreview();
             pictureBox1.Resize += pictureBox1_Resize;
-            pictureBox1.Size = new Size(Math.Max(image.Width, 100), Math.Max(image.Height, 100));
-            pictureBox1.Location = new Point((ClientSize.Width - pictureBox1.Width) / 2, (ClientSize.Height + menuStrip.Height - pictureBox1.Height) / 2);
-        }
-
-        void ImageForm_Shown(object sender, EventArgs e)
-        {
         }
 
         //////////////////////////////////////////////////////////////////////
@@ -157,8 +150,7 @@ namespace ImageVisualizer
 
         void pictureBox_MouseWheel(object sender, MouseEventArgs e)
         {
-            var delta = e.Delta / 120;
-            zoomLevel = Math.Max(0, Math.Min(zooms.Length - 1, zoomLevel + delta));
+            zoomLevel = Math.Max(0, Math.Min(zooms.Length - 1, zoomLevel + Math.Sign(e.Delta)));
             pictureBox1.Zoom = zooms[zoomLevel];
         }
 
@@ -212,21 +204,6 @@ namespace ImageVisualizer
 
         //////////////////////////////////////////////////////////////////////
 
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("!");
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
-        private void zoomResetToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            zoomLevel = 4;
-            pictureBox1.Zoom = zooms[zoomLevel];
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
         private void backgroundToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ColorDialog c = new ColorDialog();
@@ -238,6 +215,21 @@ namespace ImageVisualizer
                 pictureBox1.BackColor = c.Color;
                 pictureBox1.Invalidate();
             }
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        private void resetZoomMenuItem_Click(object sender, EventArgs e)
+        {
+            zoomLevel = 4;
+            pictureBox1.Zoom = zooms[zoomLevel];
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        private void saveMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("!");
         }
     }
 }

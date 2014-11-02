@@ -46,6 +46,7 @@ namespace ImageVisualizer
                 _zoom = value;
                 UpdateScaleFactor();
                 Invalidate();
+                Debug.Print("Zoom set to {0}", _zoom);
             }
         }
 
@@ -56,7 +57,7 @@ namespace ImageVisualizer
         private void UpdateScaleFactor()
         {
             if (_image == null)
-                this.AutoScrollMinSize = this.Size;
+                ;//this.AutoScrollMinSize = this.Size;
             else
             {
                 this.AutoScrollMinSize = new Size(
@@ -64,6 +65,7 @@ namespace ImageVisualizer
                   (int)((this._image.Height) * _zoom)
                   );
             }
+            Debug.Print("AutoScrollMinSize: {0},{1}", AutoScrollMinSize.Width, AutoScrollMinSize.Height);
         }
 
         InterpolationMode _interpolationMode = InterpolationMode.NearestNeighbor;
