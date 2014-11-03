@@ -48,7 +48,14 @@
     <Compile Include="ImageForm.Designer.cs">
       <DependentUpon>ImageForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="PicturePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PicturePanel.Designer.cs">
+      <DependentUpon>PicturePanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RoundedRect.cs" />
     <Compile Include="Visualizer.cs" />
     <Compile Include="ZoomPicBox.cs">
       <SubType>Component</SubType>

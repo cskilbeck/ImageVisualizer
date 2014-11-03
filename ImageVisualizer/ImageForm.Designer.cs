@@ -28,43 +28,30 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.menuStrip = new System.Windows.Forms.MenuStrip();
-            this.optionsZoomMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.components = new System.ComponentModel.Container();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.smallToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mediumToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.largeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.interpolationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.zoomCrispToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.zoomBlurryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.backgroundToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetZoomMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pictureBox1 = new ImageVisualizer.ZoomPicBox();
-            this.menuStrip.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // menuStrip
+            // contextMenuStrip1
             // 
-            this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.optionsZoomMenuItem});
-            this.menuStrip.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(256, 24);
-            this.menuStrip.TabIndex = 2;
-            this.menuStrip.Text = "menuStrip1";
-            // 
-            // optionsZoomMenuItem
-            // 
-            this.optionsZoomMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.helpToolStripMenuItem,
             this.interpolationToolStripMenuItem,
             this.backgroundToolStripMenuItem,
             this.resetZoomMenuItem,
             this.saveMenuItem});
-            this.optionsZoomMenuItem.Name = "optionsZoomMenuItem";
-            this.optionsZoomMenuItem.Size = new System.Drawing.Size(61, 20);
-            this.optionsZoomMenuItem.Text = "Options";
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(141, 114);
             // 
             // helpToolStripMenuItem
             // 
@@ -104,30 +91,9 @@
             // 
             // interpolationToolStripMenuItem
             // 
-            this.interpolationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.zoomCrispToolStripMenuItem,
-            this.zoomBlurryToolStripMenuItem});
             this.interpolationToolStripMenuItem.Name = "interpolationToolStripMenuItem";
             this.interpolationToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
             this.interpolationToolStripMenuItem.Text = "Zoom mode";
-            // 
-            // zoomCrispToolStripMenuItem
-            // 
-            this.zoomCrispToolStripMenuItem.Checked = true;
-            this.zoomCrispToolStripMenuItem.CheckOnClick = true;
-            this.zoomCrispToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.zoomCrispToolStripMenuItem.Name = "zoomCrispToolStripMenuItem";
-            this.zoomCrispToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
-            this.zoomCrispToolStripMenuItem.Text = "Crisp";
-            this.zoomCrispToolStripMenuItem.Click += new System.EventHandler(this.zoomCrispToolStripMenuItem_Click);
-            // 
-            // zoomBlurryToolStripMenuItem
-            // 
-            this.zoomBlurryToolStripMenuItem.CheckOnClick = true;
-            this.zoomBlurryToolStripMenuItem.Name = "zoomBlurryToolStripMenuItem";
-            this.zoomBlurryToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
-            this.zoomBlurryToolStripMenuItem.Text = "Blurry";
-            this.zoomBlurryToolStripMenuItem.Click += new System.EventHandler(this.zoomBlurryToolStripMenuItem_Click);
             // 
             // backgroundToolStripMenuItem
             // 
@@ -155,14 +121,15 @@
             this.pictureBox1.AutoScroll = true;
             this.pictureBox1.AutoScrollMinSize = new System.Drawing.Size(128, 128);
             this.pictureBox1.BackColor = System.Drawing.Color.Fuchsia;
+            this.pictureBox1.ContextMenuStrip = this.contextMenuStrip1;
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox1.ForeColor = System.Drawing.SystemColors.ActiveCaption;
             this.pictureBox1.Image = null;
             this.pictureBox1.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-            this.pictureBox1.Location = new System.Drawing.Point(0, 24);
+            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(0);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(256, 256);
+            this.pictureBox1.Size = new System.Drawing.Size(166, 146);
             this.pictureBox1.TabIndex = 4;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Text = "zoomPicBox1";
@@ -172,34 +139,27 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(256, 280);
+            this.ClientSize = new System.Drawing.Size(166, 146);
             this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.menuStrip);
-            this.MainMenuStrip = this.menuStrip;
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(130, 160);
+            this.MinimumSize = new System.Drawing.Size(50, 50);
             this.Name = "ImageForm";
             this.ShowInTaskbar = false;
             this.Text = "Image";
-            this.menuStrip.ResumeLayout(false);
-            this.menuStrip.PerformLayout();
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.MenuStrip menuStrip;
-        private System.Windows.Forms.ToolStripMenuItem optionsZoomMenuItem;
+        private ZoomPicBox pictureBox1;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem smallToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem mediumToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem largeToolStripMenuItem;
-        private ZoomPicBox pictureBox1;
         private System.Windows.Forms.ToolStripMenuItem interpolationToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem zoomBlurryToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem zoomCrispToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem backgroundToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem resetZoomMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveMenuItem;

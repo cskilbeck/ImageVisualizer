@@ -57,7 +57,9 @@ namespace ImageVisualizer
         private void UpdateScaleFactor()
         {
             if (_image == null)
-                ;//this.AutoScrollMinSize = this.Size;
+            {
+                //this.AutoScrollMinSize = this.Size;
+            }
             else
             {
                 this.AutoScrollMinSize = new Size(
@@ -82,6 +84,25 @@ namespace ImageVisualizer
             // do nothing.
         }
 
+        private Matrix DrawMatrix()
+        {
+            Matrix mx = new Matrix(_zoom, 0, 0, _zoom, 0, 0);
+            float x = AutoScrollPosition.X / _zoom;
+            float y = AutoScrollPosition.Y / _zoom;
+
+            // center the image if there are no scroll bars
+            if (!HScroll)
+            {
+                x = (this.Width - _image.Width * _zoom) / 2 / _zoom;
+            }
+            if (!VScroll)
+            {
+                y = (this.Height - _image.Height * _zoom) / 2 / _zoom;
+            }
+            mx.Translate(x, y);
+            return mx;
+        }
+
         protected override void OnPaint(PaintEventArgs e)
         {
             //if no image, don't bother
@@ -91,28 +112,45 @@ namespace ImageVisualizer
                 return;
             }
             //Set up a zoom/translate matrix
-            Matrix mx = new Matrix(_zoom, 0, 0, _zoom, 0, 0);
-            float x = AutoScrollPosition.X / _zoom;
-            float y = AutoScrollPosition.Y / _zoom;
-
-            // center the image if there are no scroll bars
-            if(!HScroll)
-            {
-                x = (this.Width - _image.Width * _zoom) / 2 / _zoom;
-            }
-            if(!VScroll)
-            {
-                y = (this.Height - _image.Height * _zoom) / 2 / _zoom;
-            }
-            mx.Translate(x, y);
+            Matrix mx = DrawMatrix();
 
             e.Graphics.FillRectangle(new SolidBrush(this.BackColor), e.ClipRectangle);
             e.Graphics.Transform = mx;
-            e.Graphics.InterpolationMode = _interpolationMode;
+            e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+            try
+            {
+                e.Graphics.InterpolationMode = _interpolationMode;
+            }
+            catch (ArgumentException)
+            {
+                e.Graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
+            }
             e.Graphics.DrawImage(_image, new Rectangle(0, 0, _image.Width, _image.Height), 0, 0, _image.Width, _image.Height, GraphicsUnit.Pixel);
+
+            e.Graphics.ResetTransform();
+            GraphicsPath p = RoundedRectangle.Create(new Rectangle(10, 10, 200, 200), 30);
+            e.Graphics.InterpolationMode = InterpolationMode.HighQualityBilinear;
+            e.Graphics.CompositingQuality = CompositingQuality.HighQuality;
+            e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
+            e.Graphics.FillPath(new SolidBrush(Color.FromArgb(128, 0, 0, 0)), p);
+            e.Graphics.DrawPath(new Pen(Brushes.White, 0.5f), p);
             base.OnPaint(e);
         }
 
+        public Point WindowToPixel(Point p)
+        {
+            if (_image != null)
+            {
+                Matrix mx = DrawMatrix();
+                mx.Invert();
+                PointF[] points = { p };
+                mx.TransformPoints(points);
+                points[0].X = (float)Math.Floor(points[0].X);
+                points[0].Y = (float)Math.Floor(points[0].Y);
+                return new Point((int)points[0].X, (int)points[0].Y);
+            }
+            return Point.Empty;
+        }
 
         public ZoomPicBox()
         {

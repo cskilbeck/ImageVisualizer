@@ -11,6 +11,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 //////////////////////////////////////////////////////////////////////
 
@@ -25,6 +26,8 @@ namespace ImageVisualizer
         private int gridSize = 16;
         private Point mousePos;
         private Point scrollPos;
+        private Label coordsLabel;
+        ToolStripMenuItem currentZoomItem;
 
         private float[] zooms = { 1/5.0f, 1/4.0f, 1/3.0f, 1/2.0f, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
         private int zoomLevel = 4;
@@ -54,7 +57,7 @@ namespace ImageVisualizer
             }
             return bmp;
         }
-
+        
         //////////////////////////////////////////////////////////////////////
 
         private void OverlayImage(Bitmap dest, Image source)
@@ -76,7 +79,7 @@ namespace ImageVisualizer
             InitializeComponent();
             pictureBox1.Size = new Size(Math.Max(image.Width, 100), Math.Max(image.Height, 100));
             pictureBox1.Location = new Point(0, 0);
-            ClientSize = new Size(pictureBox1.Width, pictureBox1.Height + SystemInformation.MenuHeight + SystemInformation.HorizontalResizeBorderThickness);
+            ClientSize = new Size(pictureBox1.Width, pictureBox1.Height);
             StartPosition = FormStartPosition.Manual;
             var mousePos = Cursor.Position;
             Location = new Point(mousePos.X - this.Width / 2, mousePos.Y - this.Height / 2);
@@ -85,11 +88,70 @@ namespace ImageVisualizer
             pictureBox1.MouseDown += pictureBox1_MouseDown;
             pictureBox1.MouseUp += pictureBox1_MouseUp;
             pictureBox1.MouseMove += pictureBox1_MouseMove;
+            pictureBox1.MouseLeave += pictureBox1_MouseLeave;
             string fmt = image.PixelFormat.ToString().Replace("Format", "");
             Text = String.Format("{0}x{1},{2}", image.Width, image.Height, fmt);
             currentImage = image;
             BuildPreview();
             pictureBox1.Resize += pictureBox1_Resize;
+            coordsLabel = new Label();
+            this.Controls.Add(coordsLabel);
+            coordsLabel.BringToFront();
+            coordsLabel.TextAlign = ContentAlignment.MiddleCenter;
+            coordsLabel.Visible = false;
+            coordsLabel.AutoSize = true;
+            coordsLabel.BorderStyle = BorderStyle.FixedSingle;
+            coordsLabel.BackColor = Color.White;
+            coordsLabel.ForeColor = Color.Black;
+
+            if(Debugger.IsAttached)
+            {
+                this.ShowInTaskbar = true;
+            }
+
+            string[] names = Enum.GetNames(typeof(InterpolationMode));
+            Array values = Enum.GetValues(typeof(InterpolationMode));
+            for (int i = 0; i < names.Length; ++i)
+            {
+                ToolStripMenuItem m = new ToolStripMenuItem(names[i]);
+                m.Click += interpolationMode_Click;
+                m.Tag = values.GetValue(i);
+                m.Checked = (InterpolationMode)m.Tag == pictureBox1.InterpolationMode;
+                if(m.Checked)
+                {
+                    currentZoomItem = m;
+                }
+                interpolationToolStripMenuItem.DropDownItems.Add(m);
+            }
+
+            PictureBox p = new PictureBox();
+            Controls.Add(p);
+            p.BringToFront();
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        void interpolationMode_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem m = sender as ToolStripMenuItem;
+            if(m != null)
+            {
+                if (currentZoomItem != null)
+                {
+                    currentZoomItem.Checked = false;
+                }
+                pictureBox1.InterpolationMode = (InterpolationMode)m.Tag;
+                pictureBox1.Invalidate();
+                m.Checked = true;
+                currentZoomItem = m;
+            }
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        void pictureBox1_MouseLeave(object sender, EventArgs e)
+        {
+            coordsLabel.Visible = false;
         }
 
         //////////////////////////////////////////////////////////////////////
@@ -112,6 +174,32 @@ namespace ImageVisualizer
                 pictureBox1.AutoScrollPosition = scrollPos;
                 pictureBox1.Invalidate();
                 mousePos = newPos;
+                coordsLabel.Visible = false;
+            }
+            else
+            {
+                Point p = pictureBox1.WindowToPixel(e.Location);
+                if(p.X >=0 && p.X < pictureBox1.Image.Width && p.Y >= 0 && p.Y < pictureBox1.Image.Height)
+                {
+                    coordsLabel.Visible = true;
+                    coordsLabel.Text = p.X + "," + p.Y;
+                    int x = e.Location.X - coordsLabel.Width - 2;
+                    int y = e.Location.Y - coordsLabel.Height - 2;
+                    if (e.Location.X < coordsLabel.Width)
+                    {
+                        x = e.Location.X + SystemInformation.CursorSize.Width;
+                    }
+                    if (e.Location.Y < coordsLabel.Height)
+                    {
+                        y = e.Location.Y + SystemInformation.CursorSize.Height;
+                    }
+                    coordsLabel.Location = new Point(x, y);
+                    coordsLabel.BringToFront();
+                }
+                else
+                {
+                    coordsLabel.Visible = false;
+                }
             }
         }
 
@@ -186,31 +274,14 @@ namespace ImageVisualizer
 
         //////////////////////////////////////////////////////////////////////
 
-        private void zoomCrispToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            zoomBlurryToolStripMenuItem.Checked = false;
-            pictureBox1.InterpolationMode = InterpolationMode.NearestNeighbor;
-            pictureBox1.Invalidate();
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
-        private void zoomBlurryToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            zoomCrispToolStripMenuItem.Checked = false;
-            pictureBox1.InterpolationMode = InterpolationMode.Bilinear;
-            pictureBox1.Invalidate();
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
         private void backgroundToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ColorDialog c = new ColorDialog();
             c.AllowFullOpen = true;
             c.FullOpen = true;
             c.SolidColorOnly = true;
-            if(c.ShowDialog() == DialogResult.OK)
+            c.Color = pictureBox1.BackColor;
+            if (c.ShowDialog() == DialogResult.OK)
             {
                 pictureBox1.BackColor = c.Color;
                 pictureBox1.Invalidate();
