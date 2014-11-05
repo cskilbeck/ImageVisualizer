@@ -154,12 +154,10 @@ namespace ImageVisualizer
 
         public ZoomPicBox()
         {
-            //Double buffer the control
             this.SetStyle(ControlStyles.UserPaint |
                           ControlStyles.ResizeRedraw |
                           ControlStyles.AllPaintingInWmPaint |
                           ControlStyles.DoubleBuffer, true);
-
             this.AutoScroll = true;
         }
     }
