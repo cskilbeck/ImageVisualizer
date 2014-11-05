@@ -8,6 +8,7 @@
 
 using System;
 using System.Drawing;
+using Microsoft.Win32;
 using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -21,34 +22,6 @@ namespace ImageVisualizer
 
     public partial class ImageForm : Form
     {
-        private PicturePanel pic;
-
-        //////////////////////////////////////////////////////////////////////
-
-        private Bitmap DrawCheckerboard(int width, int height, int gridSize)
-        {
-            Bitmap bmp = new Bitmap(width, height);
-            Brush[] brush = { Brushes.LightGray, Brushes.DarkGray };
-            int yBrush = 0;
-            Rectangle r = new Rectangle(0, 0, gridSize, gridSize);
-            using (Graphics g = Graphics.FromImage(bmp))
-            {
-                for (int y = 0; y < height; y += gridSize)
-                {
-                    int xBrush = yBrush;
-                    r.Y = y;
-                    for (int x = 0; x < width; x += gridSize)
-                    {
-                        r.X = x;
-                        g.FillRectangle(brush[xBrush], r);
-                        xBrush = 1 - xBrush;
-                    }
-                    yBrush = 1 - yBrush;
-                }
-            }
-            return bmp;
-        }
-        
         //////////////////////////////////////////////////////////////////////
 
         public ImageForm(Image image)
@@ -64,19 +37,7 @@ namespace ImageVisualizer
             {
                 this.ShowInTaskbar = true;
             }
-
-            pic = new PicturePanel();
-            pic.ZoomChanged += pic_ZoomChanged;
-            pic.Image = image;
-            pic.Dock = DockStyle.Fill;
-            Controls.Add(pic);
+            picturePanel1.Image = image;
         }
-
-        void pic_ZoomChanged(object o, EventArgs e)
-        {
-            PicturePanel p = o as PicturePanel;
-            ClientSize = new Size((int)(p.Image.Width * p.Zoom), (int)(p.Image.Height * p.Zoom));
-        }
-
     }
 }

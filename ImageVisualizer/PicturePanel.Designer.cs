@@ -52,7 +52,7 @@
             this.resetZoomMenuItem,
             this.saveMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip1";
-            this.contextMenuStrip.Size = new System.Drawing.Size(141, 136);
+            this.contextMenuStrip.Size = new System.Drawing.Size(153, 158);
             // 
             // copyToolStripMenuItem
             // 
@@ -74,7 +74,7 @@
             // smallToolStripMenuItem
             // 
             this.smallToolStripMenuItem.Name = "smallToolStripMenuItem";
-            this.smallToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.smallToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.smallToolStripMenuItem.Tag = "4";
             this.smallToolStripMenuItem.Text = "Small";
             this.smallToolStripMenuItem.Click += new System.EventHandler(this.smallToolStripMenuItem_Click);
@@ -84,7 +84,7 @@
             this.mediumToolStripMenuItem.Checked = true;
             this.mediumToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.mediumToolStripMenuItem.Name = "mediumToolStripMenuItem";
-            this.mediumToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.mediumToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.mediumToolStripMenuItem.Tag = "16";
             this.mediumToolStripMenuItem.Text = "Medium";
             this.mediumToolStripMenuItem.Click += new System.EventHandler(this.smallToolStripMenuItem_Click);
@@ -92,7 +92,7 @@
             // largeToolStripMenuItem
             // 
             this.largeToolStripMenuItem.Name = "largeToolStripMenuItem";
-            this.largeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.largeToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.largeToolStripMenuItem.Tag = "64";
             this.largeToolStripMenuItem.Text = "Large";
             this.largeToolStripMenuItem.Click += new System.EventHandler(this.smallToolStripMenuItem_Click);
@@ -122,6 +122,7 @@
             this.saveMenuItem.Name = "saveMenuItem";
             this.saveMenuItem.Size = new System.Drawing.Size(152, 22);
             this.saveMenuItem.Text = "Save";
+            this.saveMenuItem.Click += new System.EventHandler(this.saveMenuItem_Click);
             // 
             // PicturePanel
             // 

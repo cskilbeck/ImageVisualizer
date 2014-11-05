@@ -6,8 +6,10 @@
 using System.Windows.Forms;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
 using System;
+using System.Linq;
 using System.Diagnostics;
 
 //////////////////////////////////////////////////////////////////////
@@ -30,6 +32,8 @@ namespace ImageVisualizer
         private float[] zooms = { 1 / 5.0f, 1 / 4.0f, 1 / 3.0f, 1 / 2.0f, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
         private int zoomLevel = 4;
         private int gridSize = 16;
+        private bool drag = false;
+        private Point dragStartPoint;
 
         //////////////////////////////////////////////////////////////////////
 
@@ -47,6 +51,7 @@ namespace ImageVisualizer
             MouseDown += PicturePanel_MouseDown;
             MouseUp += PicturePanel_MouseUp;
             MouseLeave += PicturePanel_MouseLeave;
+            MouseDoubleClick += PicturePanel_MouseDoubleClick;
             Resize += PicturePanel_Resize;
 
             // build the InterpolationMode menu
@@ -78,6 +83,11 @@ namespace ImageVisualizer
             gridSize = Convert.ToInt32(currentGridSizeMenuItem.Tag);
         }
 
+        void PicturePanel_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            Zoom = 1;
+        }
+
         //////////////////////////////////////////////////////////////////////
 
         void interpolationMode_Click(object sender, EventArgs e)
@@ -101,8 +111,11 @@ namespace ImageVisualizer
 
         void PicturePanel_Resize(object sender, EventArgs e)
         {
-            drawRectangle = DrawRect();
-            Invalidate();
+            if(Image != null)
+            {
+                drawRectangle = DrawRect();
+                Invalidate();
+            }
         }
 
         //////////////////////////////////////////////////////////////////////
@@ -156,26 +169,50 @@ namespace ImageVisualizer
 
         void PicturePanel_MouseUp(object sender, MouseEventArgs e)
         {
+            Capture = false;
         }
 
         //////////////////////////////////////////////////////////////////////
 
         void PicturePanel_MouseDown(object sender, MouseEventArgs e)
         {
+            if(drawRectangle.Contains(e.Location))
+            {
+                Capture = true;
+                dragStartPoint = e.Location;
+            }
         }
 
         //////////////////////////////////////////////////////////////////////
 
         void PicturePanel_MouseMove(object sender, MouseEventArgs e)
         {
+            if(Capture)
+            {
+                int x = dragStartPoint.X - e.X;
+                int y = dragStartPoint.Y - e.Y;
+                drawRectangle.Offset(-x, -y);
+                dragStartPoint = e.Location;
+                Invalidate();
+            }
         }
 
         //////////////////////////////////////////////////////////////////////
 
         void PicturePanel_MouseWheel(object sender, MouseEventArgs e)
         {
-            zoomLevel = Math.Max(0, Math.Min(zooms.Length - 1, zoomLevel + Math.Sign(e.Delta)));
-            Zoom = zooms[zoomLevel];
+            if(drawRectangle.Contains(e.Location))
+            {
+                zoomLevel = Math.Max(0, Math.Min(zooms.Length - 1, zoomLevel + Math.Sign(e.Delta)));
+                zoom = zooms[zoomLevel];
+                float x = (float)(e.Location.X - drawRectangle.X) / drawRectangle.Width;
+                float y = (float)(e.Location.Y - drawRectangle.Y) / drawRectangle.Height;
+                drawRectangle.Width = Image.Width * zoom;
+                drawRectangle.Height = Image.Width * zoom;
+                drawRectangle.X = e.Location.X - drawRectangle.Width * x;
+                drawRectangle.Y = e.Location.Y - drawRectangle.Height * y;
+                Invalidate();
+            }
         }
 
         //////////////////////////////////////////////////////////////////////
@@ -189,7 +226,19 @@ namespace ImageVisualizer
             set
             {
                 zoom = value;
-                ZoomChanged.Invoke(this, new EventArgs());
+                for (int i = 0; i < zooms.Length; ++i)
+                {
+                    zoomLevel = i;
+                    if(zooms[i] >= value)
+                    {
+                        break;
+                    }
+                }
+                if(Image != null)
+                {
+                    drawRectangle = DrawRect();
+                    Invalidate();
+                }
             }
         }
 
@@ -210,9 +259,12 @@ namespace ImageVisualizer
             get { return image; }
             set
             {
-                sourceImage = (Image)value.Clone();
-                Rebuild();
-                Invalidate();
+                if(value != null)
+                {
+                    sourceImage = (Image)value.Clone();
+                    Rebuild();
+                    Invalidate();
+                }
             }
         }
 
@@ -237,9 +289,6 @@ namespace ImageVisualizer
         {
             float w = image.Width * zoom;
             float h = image.Height * zoom;
-            float scale = Math.Min(Width / w, Height / h);
-            w *= scale;
-            h *= scale;
             float x = (float)Math.Floor((Width - w) / 2.0f);
             float y = (float)Math.Floor((Height - h) / 2.0f);
             return new RectangleF(x, y, w, h);
@@ -249,10 +298,13 @@ namespace ImageVisualizer
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            e.Graphics.InterpolationMode = interpolationMode;
-            e.Graphics.CompositingQuality = CompositingQuality.HighQuality;
-            e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
-            e.Graphics.DrawImage(image, drawRectangle);
+            if(Image != null)
+            {
+                e.Graphics.InterpolationMode = interpolationMode;
+                e.Graphics.CompositingQuality = CompositingQuality.HighQuality;
+                e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
+                e.Graphics.DrawImage(image, drawRectangle);
+            }
         }
 
         //////////////////////////////////////////////////////////////////////
@@ -275,7 +327,7 @@ namespace ImageVisualizer
 
         private void copyToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Clipboard.SetImage(Image);
+            Clipboard.SetImage(sourceImage);
         }
 
         //////////////////////////////////////////////////////////////////////
@@ -298,6 +350,22 @@ namespace ImageVisualizer
         private void resetZoomMenuItem_Click(object sender, EventArgs e)
         {
             Zoom = 1;
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        private void saveMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog s = new SaveFileDialog();
+            s.CheckPathExists = true;
+            s.OverwritePrompt = true;
+            s.Filter = "PNG|*.png";
+            s.DefaultExt = "png";
+            s.AddExtension = true;
+            if(s.ShowDialog() == DialogResult.OK)
+            {
+                sourceImage.Save(s.FileName, ImageFormat.Png);
+            }
         }
     }
 }
