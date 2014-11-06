@@ -18,34 +18,37 @@ namespace ImageVisualizer
 {
     //////////////////////////////////////////////////////////////////////
 
-    public partial class PicturePanel : UserControl
+    public partial class PicturePanel : BasicPicturePanel
     {
         //////////////////////////////////////////////////////////////////////
 
-        private RectangleF drawRectangle;
-        private Image image;
-        private Image sourceImage;
-        private float zoom = 1;
-        private InterpolationMode interpolationMode = InterpolationMode.NearestNeighbor;
         private ToolStripMenuItem currentInterpolationModeMenuItem;
         private ToolStripMenuItem currentGridSizeMenuItem;
         private float[] zooms = { 1 / 5.0f, 1 / 4.0f, 1 / 3.0f, 1 / 2.0f, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
         private int zoomLevel = 4;
-        private int gridSize = 16;
-        private bool drag = false;
+        private float zoom = 1;
+        private bool dragging = false;
         private Point dragStartPoint;
+        private MouseButtons buttonHeld = MouseButtons.None;
 
-        //////////////////////////////////////////////////////////////////////
+        public class MouseMovedEventArgs : EventArgs
+        {
+            public Point mousePosition;
 
-        public delegate void ZoomChangedHandler(object o, EventArgs e);
-        public event ZoomChangedHandler ZoomChanged;
+            public MouseMovedEventArgs(Point p)
+            {
+                mousePosition = p;
+            }
+        }
+
+        public delegate void MouseMovedCallback(object sender, MouseMovedEventArgs e);
+        public event MouseMovedCallback MouseMoved;
 
         //////////////////////////////////////////////////////////////////////
 
         public PicturePanel()
         {
             InitializeComponent();
-            SetStyle(ControlStyles.UserPaint | ControlStyles.ResizeRedraw | ControlStyles.AllPaintingInWmPaint | ControlStyles.DoubleBuffer, true);
             MouseWheel += PicturePanel_MouseWheel;
             MouseMove += PicturePanel_MouseMove;
             MouseDown += PicturePanel_MouseDown;
@@ -62,7 +65,7 @@ namespace ImageVisualizer
                 ToolStripMenuItem m = new ToolStripMenuItem(names[i]);
                 m.Click += interpolationMode_Click;
                 m.Tag = values.GetValue(i);
-                m.Checked = (InterpolationMode)m.Tag == interpolationMode;
+                m.Checked = (InterpolationMode)m.Tag == InterpolationMode;
                 if (m.Checked)
                 {
                     currentInterpolationModeMenuItem = m;
@@ -82,6 +85,8 @@ namespace ImageVisualizer
             currentGridSizeMenuItem.Checked = true;
             gridSize = Convert.ToInt32(currentGridSizeMenuItem.Tag);
         }
+
+        //////////////////////////////////////////////////////////////////////
 
         void PicturePanel_MouseDoubleClick(object sender, MouseEventArgs e)
         {
@@ -113,50 +118,9 @@ namespace ImageVisualizer
         {
             if(Image != null)
             {
-                drawRectangle = DrawRect();
+                CalcDrawRect();
                 Invalidate();
             }
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
-        private Bitmap Checkerboard(int width, int height, int gridSize)
-        {
-            Bitmap bmp = new Bitmap(width, height);
-            Brush[] brush = { Brushes.LightGray, Brushes.DarkGray };
-            int yBrush = 0;
-            Rectangle r = new Rectangle(0, 0, gridSize, gridSize);
-            using (Graphics g = Graphics.FromImage(bmp))
-            {
-                for (int y = 0; y < height; y += gridSize)
-                {
-                    int xBrush = yBrush;
-                    r.Y = y;
-                    for (int x = 0; x < width; x += gridSize)
-                    {
-                        r.X = x;
-                        g.FillRectangle(brush[xBrush], r);
-                        xBrush = 1 - xBrush;
-                    }
-                    yBrush = 1 - yBrush;
-                }
-            }
-            return bmp;
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
-        private Image OverlayImage(Image dest, Image source)
-        {
-            using (Graphics g = Graphics.FromImage(dest))
-            {
-                g.InterpolationMode = InterpolationMode.NearestNeighbor;
-                g.PixelOffsetMode = PixelOffsetMode.None;
-                g.CompositingMode = CompositingMode.SourceOver;
-                Rectangle d = new Rectangle(0, 0, dest.Width, dest.Height);
-                g.DrawImage(source, d, 0, 0, source.Width, source.Height, GraphicsUnit.Pixel);
-            }
-            return dest;
         }
 
         //////////////////////////////////////////////////////////////////////
@@ -170,6 +134,7 @@ namespace ImageVisualizer
         void PicturePanel_MouseUp(object sender, MouseEventArgs e)
         {
             Capture = false;
+            dragging = false;
         }
 
         //////////////////////////////////////////////////////////////////////
@@ -179,7 +144,9 @@ namespace ImageVisualizer
             if(drawRectangle.Contains(e.Location))
             {
                 Capture = true;
+                dragging = true;
                 dragStartPoint = e.Location;
+                buttonHeld = e.Button;
             }
         }
 
@@ -187,13 +154,32 @@ namespace ImageVisualizer
 
         void PicturePanel_MouseMove(object sender, MouseEventArgs e)
         {
-            if(Capture)
+            Focus();
+            if (MouseMoved != null)
             {
-                int x = dragStartPoint.X - e.X;
-                int y = dragStartPoint.Y - e.Y;
-                drawRectangle.Offset(-x, -y);
-                dragStartPoint = e.Location;
-                Invalidate();
+                if (drawRectangle.Contains(e.Location))
+                {
+                    int x = (int)Math.Floor((e.X - drawRectangle.X) / zoom);
+                    int y = (int)Math.Floor((e.Y - drawRectangle.Y) / zoom);
+                    MouseMoved.Invoke(this, new MouseMovedEventArgs(new Point(x, y)));
+                }
+                else
+                {
+                    MouseMoved.Invoke(this, new MouseMovedEventArgs(new Point(-1, -1)));
+                }
+            }
+            if (dragging)
+            {
+                switch (buttonHeld)
+                {
+                    case MouseButtons.Left:
+                        drawRectangle.Offset(e.X - dragStartPoint.X, e.Y - dragStartPoint.Y);
+                        dragStartPoint = e.Location;
+                        Invalidate();
+                        break;
+                    case MouseButtons.Right:
+                        break;
+                }
             }
         }
 
@@ -201,16 +187,17 @@ namespace ImageVisualizer
 
         void PicturePanel_MouseWheel(object sender, MouseEventArgs e)
         {
-            if(drawRectangle.Contains(e.Location))
+            if(!Capture && drawRectangle.Contains(e.Location))
             {
                 zoomLevel = Math.Max(0, Math.Min(zooms.Length - 1, zoomLevel + Math.Sign(e.Delta)));
-                zoom = zooms[zoomLevel];
+                float newZoom = zooms[zoomLevel];
                 float x = (float)(e.Location.X - drawRectangle.X) / drawRectangle.Width;
                 float y = (float)(e.Location.Y - drawRectangle.Y) / drawRectangle.Height;
-                drawRectangle.Width = Image.Width * zoom;
-                drawRectangle.Height = Image.Width * zoom;
+                drawRectangle.Width = Image.Width * newZoom;
+                drawRectangle.Height = Image.Width * newZoom;
                 drawRectangle.X = e.Location.X - drawRectangle.Width * x;
                 drawRectangle.Y = e.Location.Y - drawRectangle.Height * y;
+                zoom = newZoom;
                 Invalidate();
             }
         }
@@ -236,44 +223,10 @@ namespace ImageVisualizer
                 }
                 if(Image != null)
                 {
-                    drawRectangle = DrawRect();
+                    CalcDrawRect();
                     Invalidate();
                 }
             }
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
-        [Category("Appearance"), Description("The interpolation mode used to smooth the drawing")]
-        public InterpolationMode InterpolationMode
-        {
-            get { return interpolationMode; }
-            set { interpolationMode = value; }
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
-        [Category("Appearance"), Description("The image to be displayed")]
-        public Image Image
-        {
-            get { return image; }
-            set
-            {
-                if(value != null)
-                {
-                    sourceImage = (Image)value.Clone();
-                    Rebuild();
-                    Invalidate();
-                }
-            }
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
-        private void Rebuild()
-        {
-            image = OverlayImage(Checkerboard(sourceImage.Width, sourceImage.Height, gridSize), sourceImage);
-            drawRectangle = DrawRect();
         }
 
         //////////////////////////////////////////////////////////////////////
@@ -285,26 +238,13 @@ namespace ImageVisualizer
 
         //////////////////////////////////////////////////////////////////////
 
-        private RectangleF DrawRect()
+        protected override void CalcDrawRect()
         {
-            float w = image.Width * zoom;
-            float h = image.Height * zoom;
+            float w = Image.Width * zoom;
+            float h = Image.Height * zoom;
             float x = (float)Math.Floor((Width - w) / 2.0f);
             float y = (float)Math.Floor((Height - h) / 2.0f);
-            return new RectangleF(x, y, w, h);
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            if(Image != null)
-            {
-                e.Graphics.InterpolationMode = interpolationMode;
-                e.Graphics.CompositingQuality = CompositingQuality.HighQuality;
-                e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
-                e.Graphics.DrawImage(image, drawRectangle);
-            }
+            drawRectangle = new RectangleF(x, y, w, h);
         }
 
         //////////////////////////////////////////////////////////////////////

@@ -20,12 +20,12 @@ namespace Test
 
         private void Form1_Shown(object sender, EventArgs e)
         {
-            Bitmap b = new Bitmap(128, 128);
+            Bitmap b = new Bitmap(256, 256);
             using(Graphics g = Graphics.FromImage(b))
             {
                 SolidBrush brush = new SolidBrush(Color.FromArgb(128, 128, 255, 64));
-                g.FillRectangle(brush, new Rectangle(0, 0, 128, 128));
-                g.FillEllipse(Brushes.Black, new Rectangle(1, 1, 126, 126));
+                g.FillRectangle(brush, new Rectangle(0, 0, b.Width, b.Height));
+                g.FillEllipse(Brushes.Black, new Rectangle(1, 1, b.Width - 2, b.Height - 2));
             }
             ImageVisualizer.Visualizer.TestShowVisualizer(b, this);
         }

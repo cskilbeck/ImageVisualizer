@@ -52,12 +52,13 @@
             this.resetZoomMenuItem,
             this.saveMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip1";
-            this.contextMenuStrip.Size = new System.Drawing.Size(153, 158);
+            this.contextMenuStrip.ShowImageMargin = false;
+            this.contextMenuStrip.Size = new System.Drawing.Size(128, 158);
             // 
             // copyToolStripMenuItem
             // 
             this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.copyToolStripMenuItem.Text = "Copy";
             this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
             // 
@@ -68,7 +69,7 @@
             this.mediumToolStripMenuItem,
             this.largeToolStripMenuItem});
             this.gridToolStripMenuItem.Name = "gridToolStripMenuItem";
-            this.gridToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.gridToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.gridToolStripMenuItem.Text = "Grid";
             // 
             // smallToolStripMenuItem
@@ -100,27 +101,27 @@
             // interpolationToolStripMenuItem
             // 
             this.interpolationToolStripMenuItem.Name = "interpolationToolStripMenuItem";
-            this.interpolationToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.interpolationToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.interpolationToolStripMenuItem.Text = "Zoom mode";
             // 
             // backgroundToolStripMenuItem
             // 
             this.backgroundToolStripMenuItem.Name = "backgroundToolStripMenuItem";
-            this.backgroundToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.backgroundToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.backgroundToolStripMenuItem.Text = "Background";
             this.backgroundToolStripMenuItem.Click += new System.EventHandler(this.backgroundToolStripMenuItem_Click);
             // 
             // resetZoomMenuItem
             // 
             this.resetZoomMenuItem.Name = "resetZoomMenuItem";
-            this.resetZoomMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.resetZoomMenuItem.Size = new System.Drawing.Size(127, 22);
             this.resetZoomMenuItem.Text = "Reset Zoom";
             this.resetZoomMenuItem.Click += new System.EventHandler(this.resetZoomMenuItem_Click);
             // 
             // saveMenuItem
             // 
             this.saveMenuItem.Name = "saveMenuItem";
-            this.saveMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveMenuItem.Size = new System.Drawing.Size(127, 22);
             this.saveMenuItem.Text = "Save";
             this.saveMenuItem.Click += new System.EventHandler(this.saveMenuItem_Click);
             // 
