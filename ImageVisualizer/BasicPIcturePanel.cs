@@ -160,7 +160,6 @@ namespace ImageVisualizer
         }
 
         //////////////////////////////////////////////////////////////////////
-        // standard is to fit the image to the control, maintaining aspect ratio
 
         protected virtual void CalcDrawRect()
         {
@@ -187,7 +186,6 @@ namespace ImageVisualizer
                 e.Graphics.DrawImage(image, drawRectangle);
                 if(!selectionRectangle.IsEmpty)
                 {
-                    // convert selectionRectangle image coordinates to scaled drawRectangle client coordinates
                     float dl = drawRectangle.Left;
                     float dt = drawRectangle.Top;
                     float dw = drawRectangle.Width;
@@ -198,13 +196,14 @@ namespace ImageVisualizer
                     float r = selectionRectangle.Right / iw * dw + dl;
                     float t = selectionRectangle.Top / ih * dh + dt;
                     float b = selectionRectangle.Bottom / ih * dh + dt;
-
-                    Rectangle s = new Rectangle((int)l, (int)t, (int)(r - l), (int)(b - t));
-
-                    e.Graphics.SmoothingMode = SmoothingMode.None;
-                    e.Graphics.PixelOffsetMode = PixelOffsetMode.None;
-                    e.Graphics.FillRectangle(selectionBrush, s);
-                    e.Graphics.DrawRectangle(Pens.White, s);
+                    if(l >= 0 || r < Width || t >= 0 || b < Height)
+                    {
+                        Rectangle s = new Rectangle((int)l, (int)t, (int)(r - l), (int)(b - t));
+                        e.Graphics.SmoothingMode = SmoothingMode.None;
+                        e.Graphics.PixelOffsetMode = PixelOffsetMode.None;
+                        e.Graphics.FillRectangle(selectionBrush, s);
+                        e.Graphics.DrawRectangle(Pens.White, s);
+                    }
                 }
             }
         }

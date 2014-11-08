@@ -59,16 +59,16 @@ namespace ImageVisualizer
         bool ApplySelectionRectangle(Rectangle rc)
         {
             Image image = picturePanel1.Image;
-            if (rc.Left >= 0 || rc.Right < image.Width || rc.Top >= 0 || rc.Bottom < image.Height)
+//            if (rc.Left >= 0 || rc.Right < image.Width || rc.Top >= 0 || rc.Bottom < image.Height)
             {
                 basicPicturePanel1.SelectionRectangle = rc;
                 return true;
             }
-            else
-            {
-                basicPicturePanel1.SelectionRectangle = Rectangle.Empty;
-                return false;
-            }
+//            else
+            //{
+            //    basicPicturePanel1.SelectionRectangle = Rectangle.Empty;
+            //    return false;
+            //}
         }
 
         void picturePanel1_MouseMoved(object sender, PicturePanel.MouseMovedEventArgs e)
