@@ -31,6 +31,31 @@ namespace ImageVisualizer
         private Point dragStartPoint;
         private MouseButtons buttonHeld = MouseButtons.None;
 
+        //////////////////////////////////////////////////////////////////////
+
+        public class ViewChangedEventArgs : EventArgs
+        {
+            public RectangleF drawRectangle;
+
+            public ViewChangedEventArgs(RectangleF r)
+            {
+                drawRectangle = r;
+            }
+        }
+
+        public delegate void ViewChangedCallback(object sender, ViewChangedEventArgs e);
+        public event ViewChangedCallback ViewChanged;
+
+        private void RaiseViewChangedEvent()
+        {
+            if(ViewChanged != null)
+            {
+                ViewChanged.Invoke(this, new ViewChangedEventArgs(drawRectangle));
+            }
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
         public class MouseMovedEventArgs : EventArgs
         {
             public Point mousePosition;
@@ -38,6 +63,13 @@ namespace ImageVisualizer
             public MouseMovedEventArgs(Point p)
             {
                 mousePosition = p;
+            }
+        }
+        private void RaiseMouseMovedEvent(int x, int y)
+        {
+            if(MouseMoved != null)
+            {
+                MouseMoved.Invoke(this, new MouseMovedEventArgs(new Point(x, y)));
             }
         }
 
@@ -157,16 +189,12 @@ namespace ImageVisualizer
             Focus();
             if (MouseMoved != null)
             {
-                if (drawRectangle.Contains(e.Location))
+                Point p = PixelPositionFromControlPosition(e.Location);
+                if (!drawRectangle.Contains(e.Location))
                 {
-                    int x = (int)Math.Floor((e.X - drawRectangle.X) / zoom);
-                    int y = (int)Math.Floor((e.Y - drawRectangle.Y) / zoom);
-                    MouseMoved.Invoke(this, new MouseMovedEventArgs(new Point(x, y)));
+                    p.X = p.Y = -1;
                 }
-                else
-                {
-                    MouseMoved.Invoke(this, new MouseMovedEventArgs(new Point(-1, -1)));
-                }
+                RaiseMouseMovedEvent(p.X, p.Y);
             }
             if (dragging)
             {
@@ -176,6 +204,7 @@ namespace ImageVisualizer
                         drawRectangle.Offset(e.X - dragStartPoint.X, e.Y - dragStartPoint.Y);
                         dragStartPoint = e.Location;
                         Invalidate();
+                        RaiseViewChangedEvent();
                         break;
                     case MouseButtons.Right:
                         break;
@@ -199,6 +228,7 @@ namespace ImageVisualizer
                 drawRectangle.Y = e.Location.Y - drawRectangle.Height * y;
                 zoom = newZoom;
                 Invalidate();
+                RaiseViewChangedEvent();
             }
         }
 
@@ -245,6 +275,7 @@ namespace ImageVisualizer
             float x = (float)Math.Floor((Width - w) / 2.0f);
             float y = (float)Math.Floor((Height - h) / 2.0f);
             drawRectangle = new RectangleF(x, y, w, h);
+            RaiseViewChangedEvent();
         }
 
         //////////////////////////////////////////////////////////////////////

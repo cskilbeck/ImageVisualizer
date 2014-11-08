@@ -40,11 +40,10 @@
             this.backgroundToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetZoomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.picturePanel1 = new ImageVisualizer.PicturePanel();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.mousePositionLabel = new System.Windows.Forms.Label();
             this.detailsLabel = new System.Windows.Forms.Label();
-            this.zoomPanel = new System.Windows.Forms.Panel();
+            this.picturePanel1 = new ImageVisualizer.PicturePanel();
             this.basicPicturePanel1 = new ImageVisualizer.BasicPicturePanel();
             this.menuStrip2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -161,21 +160,6 @@
             this.splitContainer1.SplitterDistance = 531;
             this.splitContainer1.TabIndex = 2;
             // 
-            // picturePanel1
-            // 
-            this.picturePanel1.AutoValidate = System.Windows.Forms.AutoValidate.Disable;
-            this.picturePanel1.BackColor = System.Drawing.Color.Magenta;
-            this.picturePanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.picturePanel1.GridSize = 16;
-            this.picturePanel1.Image = null;
-            this.picturePanel1.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-            this.picturePanel1.Location = new System.Drawing.Point(0, 0);
-            this.picturePanel1.Margin = new System.Windows.Forms.Padding(0);
-            this.picturePanel1.Name = "picturePanel1";
-            this.picturePanel1.Size = new System.Drawing.Size(531, 486);
-            this.picturePanel1.TabIndex = 1;
-            this.picturePanel1.Zoom = 1F;
-            // 
             // splitContainer2
             // 
             this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -192,7 +176,6 @@
             // 
             // splitContainer2.Panel2
             // 
-            this.splitContainer2.Panel2.Controls.Add(this.zoomPanel);
             this.splitContainer2.Panel2.Controls.Add(this.basicPicturePanel1);
             this.splitContainer2.Size = new System.Drawing.Size(161, 486);
             this.splitContainer2.SplitterDistance = 37;
@@ -220,15 +203,21 @@
             this.detailsLabel.Text = "label1";
             this.detailsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // zoomPanel
+            // picturePanel1
             // 
-            this.zoomPanel.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.zoomPanel.BackColor = System.Drawing.Color.Black;
-            this.zoomPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.zoomPanel.Location = new System.Drawing.Point(3, 3);
-            this.zoomPanel.Name = "zoomPanel";
-            this.zoomPanel.Size = new System.Drawing.Size(93, 53);
-            this.zoomPanel.TabIndex = 1;
+            this.picturePanel1.AutoValidate = System.Windows.Forms.AutoValidate.Disable;
+            this.picturePanel1.BackColor = System.Drawing.Color.Magenta;
+            this.picturePanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.picturePanel1.GridSize = 16;
+            this.picturePanel1.Image = null;
+            this.picturePanel1.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+            this.picturePanel1.Location = new System.Drawing.Point(0, 0);
+            this.picturePanel1.Margin = new System.Windows.Forms.Padding(0);
+            this.picturePanel1.Name = "picturePanel1";
+            this.picturePanel1.SelectionRectangle = new System.Drawing.Rectangle(0, 0, 0, 0);
+            this.picturePanel1.Size = new System.Drawing.Size(531, 486);
+            this.picturePanel1.TabIndex = 1;
+            this.picturePanel1.Zoom = 1F;
             // 
             // basicPicturePanel1
             // 
@@ -239,8 +228,12 @@
             this.basicPicturePanel1.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
             this.basicPicturePanel1.Location = new System.Drawing.Point(0, 3);
             this.basicPicturePanel1.Name = "basicPicturePanel1";
+            this.basicPicturePanel1.SelectionRectangle = new System.Drawing.Rectangle(0, 0, 0, 0);
             this.basicPicturePanel1.Size = new System.Drawing.Size(161, 161);
             this.basicPicturePanel1.TabIndex = 0;
+            this.basicPicturePanel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.basicPicturePanel1_MouseDown);
+            this.basicPicturePanel1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.basicPicturePanel1_MouseMove);
+            this.basicPicturePanel1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.basicPicturePanel1_MouseUp);
             // 
             // ImageForm
             // 
@@ -250,7 +243,6 @@
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.menuStrip2);
             this.DoubleBuffered = true;
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(50, 50);
             this.Name = "ImageForm";
@@ -289,7 +281,6 @@
         private System.Windows.Forms.Label mousePositionLabel;
         private System.Windows.Forms.Label detailsLabel;
         private BasicPicturePanel basicPicturePanel1;
-        private System.Windows.Forms.Panel zoomPanel;
 
 
 

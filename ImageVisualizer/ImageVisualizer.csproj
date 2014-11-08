@@ -42,11 +42,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BasicPIcturePanel.cs">
+    <Compile Include="BasicPicturePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="BasicPIcturePanel.Designer.cs">
-      <DependentUpon>BasicPIcturePanel.cs</DependentUpon>
+    <Compile Include="BasicPicturePanel.Designer.cs">
+      <DependentUpon>BasicPicturePanel.cs</DependentUpon>
     </Compile>
     <Compile Include="ImageForm.cs">
       <SubType>Form</SubType>
@@ -71,8 +71,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="BasicPIcturePanel.resx">
-      <DependentUpon>BasicPIcturePanel.cs</DependentUpon>
+    <EmbeddedResource Include="BasicPicturePanel.resx">
+      <DependentUpon>BasicPicturePanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ImageForm.resx">
       <DependentUpon>ImageForm.cs</DependentUpon>

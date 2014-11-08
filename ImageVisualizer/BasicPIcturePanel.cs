@@ -13,11 +13,13 @@ namespace ImageVisualizer
 {
     public partial class BasicPicturePanel : UserControl
     {
-        protected RectangleF drawRectangle;
+        public RectangleF drawRectangle;
         protected Image image;
         protected Image sourceImage;
         private InterpolationMode interpolationMode = InterpolationMode.NearestNeighbor;
         protected int gridSize = 16;
+        protected Rectangle selectionRectangle = Rectangle.Empty;
+        private Brush selectionBrush = new SolidBrush(Color.FromArgb(0xa0, 0, 0, 0));
 
         public BasicPicturePanel()
         {
@@ -64,6 +66,21 @@ namespace ImageVisualizer
                 g.DrawImage(source, d, 0, 0, source.Width, source.Height, GraphicsUnit.Pixel);
             }
             return dest;
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        public Rectangle SelectionRectangle
+        {
+            get
+            {
+                return selectionRectangle;
+            }
+            set
+            {
+                selectionRectangle = value;
+                Invalidate();
+            }
         }
 
         //////////////////////////////////////////////////////////////////////
@@ -126,6 +143,17 @@ namespace ImageVisualizer
 
         //////////////////////////////////////////////////////////////////////
 
+        public Point PixelPositionFromControlPosition(Point controlPosition)
+        {
+            float xs = (float)Image.Width / drawRectangle.Width;
+            float ys = (float)Image.Height / drawRectangle.Height;
+            float x = (controlPosition.X - drawRectangle.Left) * xs;
+            float y = (controlPosition.Y - drawRectangle.Top) * ys;
+            return new Point((int)Math.Floor(x), (int)Math.Floor(y));
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
         protected override void OnPaintBackground(PaintEventArgs pevent)
         {
             pevent.Graphics.FillRectangle(new SolidBrush(BackColor), pevent.ClipRectangle);
@@ -157,6 +185,27 @@ namespace ImageVisualizer
                 e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
                 e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
                 e.Graphics.DrawImage(image, drawRectangle);
+                if(!selectionRectangle.IsEmpty)
+                {
+                    // convert selectionRectangle image coordinates to scaled drawRectangle client coordinates
+                    float dl = drawRectangle.Left;
+                    float dt = drawRectangle.Top;
+                    float dw = drawRectangle.Width;
+                    float dh = drawRectangle.Height;
+                    float iw = image.Width;
+                    float ih = image.Height;
+                    float l = selectionRectangle.Left / iw * dw + dl;
+                    float r = selectionRectangle.Right / iw * dw + dl;
+                    float t = selectionRectangle.Top / ih * dh + dt;
+                    float b = selectionRectangle.Bottom / ih * dh + dt;
+
+                    Rectangle s = new Rectangle((int)l, (int)t, (int)(r - l), (int)(b - t));
+
+                    e.Graphics.SmoothingMode = SmoothingMode.None;
+                    e.Graphics.PixelOffsetMode = PixelOffsetMode.None;
+                    e.Graphics.FillRectangle(selectionBrush, s);
+                    e.Graphics.DrawRectangle(Pens.White, s);
+                }
             }
         }
 
