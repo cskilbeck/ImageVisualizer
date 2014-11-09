@@ -46,7 +46,7 @@ namespace ImageVisualizer
             Array values = Enum.GetValues(typeof(InterpolationMode));
             for (int i = 0; i < names.Length; ++i)
             {
-                if ((InterpolationMode)values.GetValue(i) != InterpolationMode.Invalid) //hnf
+                if ((InterpolationMode)values.GetValue(i) != InterpolationMode.Invalid) //hmph
                 {
                     ToolStripMenuItem m = new ToolStripMenuItem(names[i]);
                     m.Click += interpolationMode_Click;

@@ -184,7 +184,7 @@
             this.detailsLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
             this.detailsLabel.Name = "detailsLabel";
             this.detailsLabel.Size = new System.Drawing.Size(118, 17);
-            this.detailsLabel.Text = "toolStripStatusLabel1";
+            this.detailsLabel.Text = "details";
             // 
             // mousePositionLabel
             // 
@@ -192,7 +192,7 @@
             this.mousePositionLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
             this.mousePositionLabel.Name = "mousePositionLabel";
             this.mousePositionLabel.Size = new System.Drawing.Size(118, 17);
-            this.mousePositionLabel.Text = "toolStripStatusLabel1";
+            this.mousePositionLabel.Text = "mousePosition";
             // 
             // picturePanel1
             // 
@@ -222,6 +222,9 @@
             this.basicPicturePanel1.SelectionRectangle = new System.Drawing.Rectangle(0, 0, 0, 0);
             this.basicPicturePanel1.Size = new System.Drawing.Size(161, 161);
             this.basicPicturePanel1.TabIndex = 1;
+            this.basicPicturePanel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.basicPicturePanel1_MouseDown);
+            this.basicPicturePanel1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.basicPicturePanel1_MouseMove);
+            this.basicPicturePanel1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.basicPicturePanel1_MouseUp);
             // 
             // ImageForm
             // 
