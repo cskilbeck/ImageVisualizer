@@ -22,8 +22,6 @@ namespace ImageVisualizer
     {
         //////////////////////////////////////////////////////////////////////
 
-        private ToolStripMenuItem currentInterpolationModeMenuItem;
-        private ToolStripMenuItem currentGridSizeMenuItem;
         private float[] zooms = { 1 / 5.0f, 1 / 4.0f, 1 / 3.0f, 1 / 2.0f, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
         private int zoomLevel = 4;
         private float zoom = 1;
@@ -88,34 +86,6 @@ namespace ImageVisualizer
             MouseLeave += PicturePanel_MouseLeave;
             MouseDoubleClick += PicturePanel_MouseDoubleClick;
             Resize += PicturePanel_Resize;
-
-            // build the InterpolationMode menu
-            string[] names = Enum.GetNames(typeof(InterpolationMode));
-            Array values = Enum.GetValues(typeof(InterpolationMode));
-            for (int i = 0; i < names.Length; ++i)
-            {
-                ToolStripMenuItem m = new ToolStripMenuItem(names[i]);
-                m.Click += interpolationMode_Click;
-                m.Tag = values.GetValue(i);
-                m.Checked = (InterpolationMode)m.Tag == InterpolationMode;
-                if (m.Checked)
-                {
-                    currentInterpolationModeMenuItem = m;
-                }
-                interpolationToolStripMenuItem.DropDownItems.Add(m);
-            }
-
-            // sort out what grid size is selected by default
-            foreach (ToolStripMenuItem m in gridToolStripMenuItem.DropDownItems)
-            {
-                currentGridSizeMenuItem = m;
-                if(m.Checked)
-                {
-                    break;
-                }
-            }
-            currentGridSizeMenuItem.Checked = true;
-            gridSize = Convert.ToInt32(currentGridSizeMenuItem.Tag);
         }
 
         //////////////////////////////////////////////////////////////////////
@@ -123,25 +93,6 @@ namespace ImageVisualizer
         void PicturePanel_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             Zoom = 1;
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
-        void interpolationMode_Click(object sender, EventArgs e)
-        {
-            ToolStripMenuItem m = sender as ToolStripMenuItem;
-            if(m != null)
-            {
-                if (currentInterpolationModeMenuItem != null)
-                {
-                    currentInterpolationModeMenuItem.Checked = false;
-                }
-                m.Checked = true;
-                currentInterpolationModeMenuItem = m;
-                InterpolationMode = (InterpolationMode)m.Tag;
-                Rebuild();
-                Invalidate();
-            }
         }
 
         //////////////////////////////////////////////////////////////////////
@@ -261,13 +212,6 @@ namespace ImageVisualizer
 
         //////////////////////////////////////////////////////////////////////
 
-        protected override void OnPaintBackground(PaintEventArgs pevent)
-        {
-            pevent.Graphics.FillRectangle(new SolidBrush(BackColor), pevent.ClipRectangle);
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
         protected override void CalcDrawRect()
         {
             float w = Image.Width * zoom;
@@ -276,67 +220,6 @@ namespace ImageVisualizer
             float y = (float)Math.Floor((Height - h) / 2.0f);
             drawRectangle = new RectangleF(x, y, w, h);
             RaiseViewChangedEvent();
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
-        private void backgroundToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ColorDialog c = new ColorDialog();
-            c.AllowFullOpen = true;
-            c.FullOpen = true;
-            c.SolidColorOnly = true;
-            c.Color = BackColor;
-            if (c.ShowDialog() == DialogResult.OK)
-            {
-                BackColor = c.Color;
-                Invalidate();
-            }
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
-        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Clipboard.SetImage(sourceImage);
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
-        private void smallToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if(currentGridSizeMenuItem != null)
-            {
-                currentGridSizeMenuItem.Checked = false;
-            }
-            currentGridSizeMenuItem = (ToolStripMenuItem)sender;
-            currentGridSizeMenuItem.Checked = true;
-            gridSize = Convert.ToInt32(currentGridSizeMenuItem.Tag);
-            Rebuild();
-            Invalidate();
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
-        private void resetZoomMenuItem_Click(object sender, EventArgs e)
-        {
-            Zoom = 1;
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
-        private void saveMenuItem_Click(object sender, EventArgs e)
-        {
-            SaveFileDialog s = new SaveFileDialog();
-            s.CheckPathExists = true;
-            s.OverwritePrompt = true;
-            s.Filter = "PNG|*.png";
-            s.DefaultExt = "png";
-            s.AddExtension = true;
-            if(s.ShowDialog() == DialogResult.OK)
-            {
-                sourceImage.Save(s.FileName, ImageFormat.Png);
-            }
         }
     }
 }

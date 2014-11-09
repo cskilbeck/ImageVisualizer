@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing.Drawing2D;
+using System.Diagnostics;
 
 namespace ImageVisualizer
 {
@@ -179,7 +180,14 @@ namespace ImageVisualizer
         {
             if (Image != null)
             {
-                e.Graphics.InterpolationMode = interpolationMode;
+                try
+                {
+                    e.Graphics.InterpolationMode = interpolationMode;
+                }
+                catch(ArgumentException)
+                {
+                    e.Graphics.InterpolationMode = InterpolationMode.Default;
+                }
                 e.Graphics.CompositingQuality = CompositingQuality.HighQuality;
                 e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
                 e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
@@ -188,14 +196,12 @@ namespace ImageVisualizer
                 {
                     float dl = drawRectangle.Left;
                     float dt = drawRectangle.Top;
-                    float dw = drawRectangle.Width;
-                    float dh = drawRectangle.Height;
-                    float iw = image.Width;
-                    float ih = image.Height;
-                    float l = selectionRectangle.Left / iw * dw + dl;
-                    float r = selectionRectangle.Right / iw * dw + dl;
-                    float t = selectionRectangle.Top / ih * dh + dt;
-                    float b = selectionRectangle.Bottom / ih * dh + dt;
+                    float xs = drawRectangle.Width / image.Width;
+                    float ys = drawRectangle.Height / image.Height;
+                    float l = selectionRectangle.Left * xs + dl;
+                    float r = selectionRectangle.Right * xs + dl;
+                    float t = selectionRectangle.Top * ys + dt;
+                    float b = selectionRectangle.Bottom * ys + dt;
                     if(l >= 0 || r < Width || t >= 0 || b < Height)
                     {
                         Rectangle s = new Rectangle((int)l, (int)t, (int)(r - l), (int)(b - t));

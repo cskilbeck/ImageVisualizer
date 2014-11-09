@@ -22,6 +22,9 @@ namespace ImageVisualizer
 
     public partial class ImageForm : Form
     {
+        private ToolStripMenuItem currentInterpolationModeMenuItem;
+        private ToolStripMenuItem currentGridSizeMenuItem;
+
         //////////////////////////////////////////////////////////////////////
 
         private bool dragSelection;
@@ -37,8 +40,57 @@ namespace ImageVisualizer
             this.ShowInTaskbar = true;
             picturePanel1.MouseMoved += picturePanel1_MouseMoved;
             picturePanel1.ViewChanged += picturePanel1_ViewChanged;
+
+            // build the InterpolationMode menu
+            string[] names = Enum.GetNames(typeof(InterpolationMode));
+            Array values = Enum.GetValues(typeof(InterpolationMode));
+            for (int i = 0; i < names.Length; ++i)
+            {
+                if ((InterpolationMode)values.GetValue(i) != InterpolationMode.Invalid) //hnf
+                {
+                    ToolStripMenuItem m = new ToolStripMenuItem(names[i]);
+                    m.Click += interpolationMode_Click;
+                    m.Tag = values.GetValue(i);
+                    m.Checked = (InterpolationMode)m.Tag == picturePanel1.InterpolationMode;
+                    if (m.Checked)
+                    {
+                        currentInterpolationModeMenuItem = m;
+                    }
+                    zoomModeToolStripMenuItem.DropDownItems.Add(m);
+                }
+            }
+
+            // sort out what grid size is selected by default
+            foreach (ToolStripMenuItem m in gridToolStripMenuItem.DropDownItems)
+            {
+                currentGridSizeMenuItem = m;
+                if (m.Checked)
+                {
+                    break;
+                }
+            }
+            currentGridSizeMenuItem.Checked = true;
+            picturePanel1.GridSize = basicPicturePanel1.GridSize = Convert.ToInt32(currentGridSizeMenuItem.Tag);
+
             picturePanel1.Image = image;
             basicPicturePanel1.Image = image;
+        }
+
+        void interpolationMode_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem m = sender as ToolStripMenuItem;
+            if (m != null)
+            {
+                if (currentInterpolationModeMenuItem != null)
+                {
+                    currentInterpolationModeMenuItem.Checked = false;
+                }
+                m.Checked = true;
+                currentInterpolationModeMenuItem = m;
+                picturePanel1.InterpolationMode = (InterpolationMode)m.Tag;
+                basicPicturePanel1.InterpolationMode = (InterpolationMode)m.Tag;
+                // !?
+            }
         }
 
         void picturePanel1_ViewChanged(object sender, PicturePanel.ViewChangedEventArgs e)
@@ -125,6 +177,55 @@ namespace ImageVisualizer
         private void basicPicturePanel1_MouseUp(object sender, MouseEventArgs e)
         {
             dragSelection = false;
+        }
+
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetImage(picturePanel1.Image);
+        }
+
+        private void SetGridSize(ToolStripMenuItem m)
+        {
+            if (currentGridSizeMenuItem != null)
+            {
+                currentGridSizeMenuItem.Checked = false;
+            }
+            currentGridSizeMenuItem = m;
+            currentGridSizeMenuItem.Checked = true;
+            picturePanel1.GridSize = basicPicturePanel1.GridSize = Convert.ToInt32(currentGridSizeMenuItem.Tag);
+        }
+
+        private void gridSizeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetGridSize((ToolStripMenuItem)sender);
+        }
+
+        private void mediumToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetGridSize((ToolStripMenuItem)sender);
+        }
+
+        private void largeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetGridSize((ToolStripMenuItem)sender);
+        }
+
+        private void backgroundToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ColorDialog c = new ColorDialog();
+            c.AllowFullOpen = true;
+            c.FullOpen = true;
+            c.SolidColorOnly = true;
+            c.Color = picturePanel1.BackColor;
+            if (c.ShowDialog() == DialogResult.OK)
+            {
+                picturePanel1.BackColor = basicPicturePanel1.BackColor = c.Color;
+            }
+        }
+
+        private void resetZoomToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            picturePanel1.Zoom = 1;
         }
     }
 }

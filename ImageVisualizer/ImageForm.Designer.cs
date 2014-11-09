@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.menuStrip2 = new System.Windows.Forms.MenuStrip();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -40,9 +39,9 @@
             this.backgroundToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetZoomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.mousePositionLabel = new System.Windows.Forms.Label();
-            this.detailsLabel = new System.Windows.Forms.Label();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.detailsLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.mousePositionLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.picturePanel1 = new ImageVisualizer.PicturePanel();
             this.basicPicturePanel1 = new ImageVisualizer.BasicPicturePanel();
             this.menuStrip2.SuspendLayout();
@@ -50,10 +49,7 @@
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
-            this.splitContainer2.Panel1.SuspendLayout();
-            this.splitContainer2.Panel2.SuspendLayout();
-            this.splitContainer2.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip2
@@ -85,6 +81,7 @@
             this.copyToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
             this.copyToolStripMenuItem.Text = "&Copy";
             this.copyToolStripMenuItem.TextImageRelation = System.Windows.Forms.TextImageRelation.Overlay;
+            this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
             // 
             // gridToolStripMenuItem
             // 
@@ -102,19 +99,27 @@
             // 
             this.smallToolStripMenuItem.Name = "smallToolStripMenuItem";
             this.smallToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.smallToolStripMenuItem.Tag = 4;
             this.smallToolStripMenuItem.Text = "&Small";
+            this.smallToolStripMenuItem.Click += new System.EventHandler(this.gridSizeToolStripMenuItem_Click);
             // 
             // mediumToolStripMenuItem
             // 
+            this.mediumToolStripMenuItem.Checked = true;
+            this.mediumToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.mediumToolStripMenuItem.Name = "mediumToolStripMenuItem";
             this.mediumToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.mediumToolStripMenuItem.Tag = 16;
             this.mediumToolStripMenuItem.Text = "&Medium";
+            this.mediumToolStripMenuItem.Click += new System.EventHandler(this.gridSizeToolStripMenuItem_Click);
             // 
             // largeToolStripMenuItem
             // 
             this.largeToolStripMenuItem.Name = "largeToolStripMenuItem";
             this.largeToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.largeToolStripMenuItem.Tag = 64;
             this.largeToolStripMenuItem.Text = "&Large";
+            this.largeToolStripMenuItem.Click += new System.EventHandler(this.gridSizeToolStripMenuItem_Click);
             // 
             // zoomModeToolStripMenuItem
             // 
@@ -131,6 +136,7 @@
             this.backgroundToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
             this.backgroundToolStripMenuItem.Text = "&Background";
             this.backgroundToolStripMenuItem.TextImageRelation = System.Windows.Forms.TextImageRelation.Overlay;
+            this.backgroundToolStripMenuItem.Click += new System.EventHandler(this.backgroundToolStripMenuItem_Click);
             // 
             // resetZoomToolStripMenuItem
             // 
@@ -139,6 +145,7 @@
             this.resetZoomToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
             this.resetZoomToolStripMenuItem.Text = "&Reset zoom";
             this.resetZoomToolStripMenuItem.TextImageRelation = System.Windows.Forms.TextImageRelation.Overlay;
+            this.resetZoomToolStripMenuItem.Click += new System.EventHandler(this.resetZoomToolStripMenuItem_Click);
             // 
             // splitContainer1
             // 
@@ -155,53 +162,37 @@
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(696, 486);
+            this.splitContainer1.Panel2.Controls.Add(this.basicPicturePanel1);
+            this.splitContainer1.Size = new System.Drawing.Size(696, 464);
             this.splitContainer1.SplitterDistance = 531;
             this.splitContainer1.TabIndex = 2;
             // 
-            // splitContainer2
+            // statusStrip1
             // 
-            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer2.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
-            this.splitContainer2.IsSplitterFixed = true;
-            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer2.Name = "splitContainer2";
-            this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // splitContainer2.Panel1
-            // 
-            this.splitContainer2.Panel1.Controls.Add(this.mousePositionLabel);
-            this.splitContainer2.Panel1.Controls.Add(this.detailsLabel);
-            // 
-            // splitContainer2.Panel2
-            // 
-            this.splitContainer2.Panel2.Controls.Add(this.basicPicturePanel1);
-            this.splitContainer2.Size = new System.Drawing.Size(161, 486);
-            this.splitContainer2.SplitterDistance = 37;
-            this.splitContainer2.TabIndex = 0;
-            // 
-            // mousePositionLabel
-            // 
-            this.mousePositionLabel.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.mousePositionLabel.Location = new System.Drawing.Point(0, 18);
-            this.mousePositionLabel.Name = "mousePositionLabel";
-            this.mousePositionLabel.Size = new System.Drawing.Size(161, 17);
-            this.mousePositionLabel.TabIndex = 1;
-            this.mousePositionLabel.Text = "label2";
-            this.mousePositionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.detailsLabel,
+            this.mousePositionLabel});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 488);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(696, 22);
+            this.statusStrip1.TabIndex = 3;
+            this.statusStrip1.Text = "statusStrip1";
             // 
             // detailsLabel
             // 
-            this.detailsLabel.AutoEllipsis = true;
-            this.detailsLabel.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.detailsLabel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.detailsLabel.Location = new System.Drawing.Point(0, 0);
+            this.detailsLabel.AutoSize = false;
+            this.detailsLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
             this.detailsLabel.Name = "detailsLabel";
-            this.detailsLabel.Size = new System.Drawing.Size(161, 17);
-            this.detailsLabel.TabIndex = 0;
-            this.detailsLabel.Text = "label1";
-            this.detailsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.detailsLabel.Size = new System.Drawing.Size(118, 17);
+            this.detailsLabel.Text = "toolStripStatusLabel1";
+            // 
+            // mousePositionLabel
+            // 
+            this.mousePositionLabel.AutoSize = false;
+            this.mousePositionLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+            this.mousePositionLabel.Name = "mousePositionLabel";
+            this.mousePositionLabel.Size = new System.Drawing.Size(118, 17);
+            this.mousePositionLabel.Text = "toolStripStatusLabel1";
             // 
             // picturePanel1
             // 
@@ -215,7 +206,7 @@
             this.picturePanel1.Margin = new System.Windows.Forms.Padding(0);
             this.picturePanel1.Name = "picturePanel1";
             this.picturePanel1.SelectionRectangle = new System.Drawing.Rectangle(0, 0, 0, 0);
-            this.picturePanel1.Size = new System.Drawing.Size(531, 486);
+            this.picturePanel1.Size = new System.Drawing.Size(531, 464);
             this.picturePanel1.TabIndex = 1;
             this.picturePanel1.Zoom = 1F;
             // 
@@ -226,14 +217,11 @@
             this.basicPicturePanel1.GridSize = 16;
             this.basicPicturePanel1.Image = null;
             this.basicPicturePanel1.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-            this.basicPicturePanel1.Location = new System.Drawing.Point(0, 3);
+            this.basicPicturePanel1.Location = new System.Drawing.Point(0, 0);
             this.basicPicturePanel1.Name = "basicPicturePanel1";
             this.basicPicturePanel1.SelectionRectangle = new System.Drawing.Rectangle(0, 0, 0, 0);
             this.basicPicturePanel1.Size = new System.Drawing.Size(161, 161);
-            this.basicPicturePanel1.TabIndex = 0;
-            this.basicPicturePanel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.basicPicturePanel1_MouseDown);
-            this.basicPicturePanel1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.basicPicturePanel1_MouseMove);
-            this.basicPicturePanel1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.basicPicturePanel1_MouseUp);
+            this.basicPicturePanel1.TabIndex = 1;
             // 
             // ImageForm
             // 
@@ -242,6 +230,7 @@
             this.ClientSize = new System.Drawing.Size(696, 510);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.menuStrip2);
+            this.Controls.Add(this.statusStrip1);
             this.DoubleBuffered = true;
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(50, 50);
@@ -254,10 +243,8 @@
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
-            this.splitContainer2.Panel1.ResumeLayout(false);
-            this.splitContainer2.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
-            this.splitContainer2.ResumeLayout(false);
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -277,9 +264,9 @@
         private System.Windows.Forms.ToolStripMenuItem zoomModeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem backgroundToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem resetZoomToolStripMenuItem;
-        private System.Windows.Forms.SplitContainer splitContainer2;
-        private System.Windows.Forms.Label mousePositionLabel;
-        private System.Windows.Forms.Label detailsLabel;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel detailsLabel;
+        private System.Windows.Forms.ToolStripStatusLabel mousePositionLabel;
         private BasicPicturePanel basicPicturePanel1;
 
 
