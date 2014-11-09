@@ -99,11 +99,8 @@ namespace ImageVisualizer
 
         void PicturePanel_Resize(object sender, EventArgs e)
         {
-            if(Image != null)
-            {
-                CalcDrawRect();
-                Invalidate();
-            }
+            CalcDrawRect(Image);
+            Invalidate();
         }
 
         //////////////////////////////////////////////////////////////////////
@@ -137,28 +134,31 @@ namespace ImageVisualizer
 
         void PicturePanel_MouseMove(object sender, MouseEventArgs e)
         {
-            Focus();
-            if (MouseMoved != null)
+            if (Image != null)
             {
-                Point p = PixelPositionFromControlPosition(e.Location);
-                if (!drawRectangle.Contains(e.Location))
+                Focus();
+                if (MouseMoved != null)
                 {
-                    p.X = p.Y = -1;
+                    Point p = PixelPositionFromControlPosition(e.Location);
+                    if (!drawRectangle.Contains(e.Location))
+                    {
+                        p.X = p.Y = -1;
+                    }
+                    RaiseMouseMovedEvent(p.X, p.Y);
                 }
-                RaiseMouseMovedEvent(p.X, p.Y);
-            }
-            if (dragging)
-            {
-                switch (buttonHeld)
+                if (dragging)
                 {
-                    case MouseButtons.Left:
-                        drawRectangle.Offset(e.X - dragStartPoint.X, e.Y - dragStartPoint.Y);
-                        dragStartPoint = e.Location;
-                        Invalidate();
-                        RaiseViewChangedEvent();
-                        break;
-                    case MouseButtons.Right:
-                        break;
+                    switch (buttonHeld)
+                    {
+                        case MouseButtons.Left:
+                            drawRectangle.Offset(e.X - dragStartPoint.X, e.Y - dragStartPoint.Y);
+                            dragStartPoint = e.Location;
+                            Invalidate();
+                            RaiseViewChangedEvent();
+                            break;
+                        case MouseButtons.Right:
+                            break;
+                    }
                 }
             }
         }
@@ -167,7 +167,7 @@ namespace ImageVisualizer
 
         void PicturePanel_MouseWheel(object sender, MouseEventArgs e)
         {
-            if(!Capture && drawRectangle.Contains(e.Location))
+            if(Image != null && !Capture && drawRectangle.Contains(e.Location))
             {
                 zoomLevel = Math.Max(0, Math.Min(zooms.Length - 1, zoomLevel + Math.Sign(e.Delta)));
                 float newZoom = zooms[zoomLevel];
@@ -202,24 +202,24 @@ namespace ImageVisualizer
                         break;
                     }
                 }
-                if(Image != null)
-                {
-                    CalcDrawRect();
-                    Invalidate();
-                }
+                CalcDrawRect(Image);
+                Invalidate();
             }
         }
 
         //////////////////////////////////////////////////////////////////////
 
-        protected override void CalcDrawRect()
+        protected override void CalcDrawRect(Image image)
         {
-            float w = Image.Width * zoom;
-            float h = Image.Height * zoom;
-            float x = (float)Math.Floor((Width - w) / 2.0f);
-            float y = (float)Math.Floor((Height - h) / 2.0f);
-            drawRectangle = new RectangleF(x, y, w, h);
-            RaiseViewChangedEvent();
+            if(image != null)
+            {
+                float w = image.Width * zoom;
+                float h = image.Height * zoom;
+                float x = (float)Math.Floor((Width - w) / 2.0f);
+                float y = (float)Math.Floor((Height - h) / 2.0f);
+                drawRectangle = new RectangleF(x, y, w, h);
+                RaiseViewChangedEvent();
+            }
         }
     }
 }

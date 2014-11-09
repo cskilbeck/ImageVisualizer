@@ -22,21 +22,24 @@ namespace ImageVisualizer
 
     public partial class ImageForm : Form
     {
-        private ToolStripMenuItem currentInterpolationModeMenuItem;
-        private ToolStripMenuItem currentGridSizeMenuItem;
+        ToolStripMenuItem currentInterpolationModeMenuItem;
+        ToolStripMenuItem currentGridSizeMenuItem;
+        bool dragSelection;
+        int gridSize;
+        Image image;
+        Image sourceImage;
 
         //////////////////////////////////////////////////////////////////////
 
-        private bool dragSelection;
-
-        public ImageForm(Image image)
+        public ImageForm(Image sourceImage)
         {
+            this.sourceImage = sourceImage;
             InitializeComponent();
             StartPosition = FormStartPosition.Manual;
             var mousePos = Cursor.Position;
             Location = new Point(mousePos.X - this.Width / 2, Math.Max(0, mousePos.Y - this.Height / 2));
-            string fmt = image.PixelFormat.ToString().Replace("Format", "");
-            detailsLabel.Text = String.Format("{0}x{1},{2}", image.Width, image.Height, fmt);
+            string fmt = sourceImage.PixelFormat.ToString().Replace("Format", "");
+            detailsLabel.Text = String.Format("{0}x{1},{2}", sourceImage.Width, sourceImage.Height, fmt);
             this.ShowInTaskbar = true;
             picturePanel1.MouseMoved += picturePanel1_MouseMoved;
             picturePanel1.ViewChanged += picturePanel1_ViewChanged;
@@ -66,15 +69,65 @@ namespace ImageVisualizer
                 currentGridSizeMenuItem = m;
                 if (m.Checked)
                 {
+                    gridSize = (int)m.Tag;
                     break;
                 }
             }
             currentGridSizeMenuItem.Checked = true;
-            picturePanel1.GridSize = basicPicturePanel1.GridSize = Convert.ToInt32(currentGridSizeMenuItem.Tag);
+            BuildImage();
+        }
 
+        //////////////////////////////////////////////////////////////////////
+
+        void BuildImage()
+        {
+            image = OverlayImage(Checkerboard(sourceImage.Width, sourceImage.Height, gridSize), sourceImage);
             picturePanel1.Image = image;
             basicPicturePanel1.Image = image;
         }
+
+        //////////////////////////////////////////////////////////////////////
+
+        Bitmap Checkerboard(int width, int height, int gridSize)
+        {
+            Bitmap bmp = new Bitmap(width, height);
+            Brush[] brush = { Brushes.LightGray, Brushes.DarkGray };
+            int yBrush = 0;
+            Rectangle r = new Rectangle(0, 0, gridSize, gridSize);
+            using (Graphics g = Graphics.FromImage(bmp))
+            {
+                for (int y = 0; y < height; y += gridSize)
+                {
+                    int xBrush = yBrush;
+                    r.Y = y;
+                    for (int x = 0; x < width; x += gridSize)
+                    {
+                        r.X = x;
+                        g.FillRectangle(brush[xBrush], r);
+                        xBrush = 1 - xBrush;
+                    }
+                    yBrush = 1 - yBrush;
+                }
+            }
+            return bmp;
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        Image OverlayImage(Image dest, Image source)
+        {
+            using (Graphics g = Graphics.FromImage(dest))
+            {
+                g.InterpolationMode = InterpolationMode.NearestNeighbor;
+                g.PixelOffsetMode = PixelOffsetMode.None;
+                g.CompositingMode = CompositingMode.SourceOver;
+                Rectangle d = new Rectangle(0, 0, dest.Width, dest.Height);
+                g.DrawImage(source, d, 0, 0, source.Width, source.Height, GraphicsUnit.Pixel);
+            }
+            return dest;
+        }
+
+        //////////////////////////////////////////////////////////////////////
 
         void interpolationMode_Click(object sender, EventArgs e)
         {
@@ -93,35 +146,39 @@ namespace ImageVisualizer
             }
         }
 
+        //////////////////////////////////////////////////////////////////////
+
         void picturePanel1_ViewChanged(object sender, PicturePanel.ViewChangedEventArgs e)
         {
-            RectangleF d = e.drawRectangle;
+            if(picturePanel1.Image != null)
+            {
+                RectangleF d = e.drawRectangle;
 
-            float xs = (float)picturePanel1.Image.Width / d.Width;
-            float ys = (float)picturePanel1.Image.Height / d.Height;
+                float xs = (float)picturePanel1.Image.Width / d.Width;
+                float ys = (float)picturePanel1.Image.Height / d.Height;
 
-            float l = -d.Left * xs;
-            float t = -d.Top * ys;
-            float w = picturePanel1.Width * xs + 1;
-            float h = picturePanel1.Height * ys + 1;
+                float l = -d.Left * xs;
+                float t = -d.Top * ys;
+                float w = picturePanel1.Width * xs + 1;
+                float h = picturePanel1.Height * ys + 1;
 
-            ApplySelectionRectangle(new Rectangle((int)l, (int)t, (int)w, (int)h));
+                ApplySelectionRectangle(new Rectangle((int)l, (int)t, (int)w, (int)h));
+            }
         }
+
+        //////////////////////////////////////////////////////////////////////
 
         bool ApplySelectionRectangle(Rectangle rc)
         {
             Image image = picturePanel1.Image;
-//            if (rc.Left >= 0 || rc.Right < image.Width || rc.Top >= 0 || rc.Bottom < image.Height)
             {
                 basicPicturePanel1.SelectionRectangle = rc;
                 return true;
             }
-//            else
-            //{
-            //    basicPicturePanel1.SelectionRectangle = Rectangle.Empty;
-            //    return false;
-            //}
+
         }
+
+        //////////////////////////////////////////////////////////////////////
 
         void picturePanel1_MouseMoved(object sender, PicturePanel.MouseMovedEventArgs e)
         {
@@ -134,6 +191,8 @@ namespace ImageVisualizer
                 mousePositionLabel.Text = "";
             }
         }
+
+        //////////////////////////////////////////////////////////////////////
 
         private void SetSelectionRectangle(Point pos)
         {
@@ -157,6 +216,8 @@ namespace ImageVisualizer
             }
         }
 
+        //////////////////////////////////////////////////////////////////////
+
         private void basicPicturePanel1_MouseDown(object sender, MouseEventArgs e)
         {
             if(!basicPicturePanel1.SelectionRectangle.IsEmpty)
@@ -166,6 +227,8 @@ namespace ImageVisualizer
             }
         }
 
+        //////////////////////////////////////////////////////////////////////
+
         private void basicPicturePanel1_MouseMove(object sender, MouseEventArgs e)
         {
             if(dragSelection)
@@ -174,15 +237,21 @@ namespace ImageVisualizer
             }
         }
 
+        //////////////////////////////////////////////////////////////////////
+
         private void basicPicturePanel1_MouseUp(object sender, MouseEventArgs e)
         {
             dragSelection = false;
         }
 
+        //////////////////////////////////////////////////////////////////////
+
         private void copyToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Clipboard.SetImage(picturePanel1.Image);
         }
+
+        //////////////////////////////////////////////////////////////////////
 
         private void SetGridSize(ToolStripMenuItem m)
         {
@@ -192,23 +261,32 @@ namespace ImageVisualizer
             }
             currentGridSizeMenuItem = m;
             currentGridSizeMenuItem.Checked = true;
-            picturePanel1.GridSize = basicPicturePanel1.GridSize = Convert.ToInt32(currentGridSizeMenuItem.Tag);
+            gridSize = Convert.ToInt32(currentGridSizeMenuItem.Tag);
+            BuildImage();
         }
+
+        //////////////////////////////////////////////////////////////////////
 
         private void gridSizeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SetGridSize((ToolStripMenuItem)sender);
         }
 
+        //////////////////////////////////////////////////////////////////////
+
         private void mediumToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SetGridSize((ToolStripMenuItem)sender);
         }
 
+        //////////////////////////////////////////////////////////////////////
+
         private void largeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SetGridSize((ToolStripMenuItem)sender);
         }
+
+        //////////////////////////////////////////////////////////////////////
 
         private void backgroundToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -222,6 +300,8 @@ namespace ImageVisualizer
                 picturePanel1.BackColor = basicPicturePanel1.BackColor = c.Color;
             }
         }
+
+        //////////////////////////////////////////////////////////////////////
 
         private void resetZoomToolStripMenuItem_Click(object sender, EventArgs e)
         {

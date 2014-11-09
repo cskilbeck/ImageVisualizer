@@ -39,11 +39,11 @@
             this.backgroundToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetZoomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.picturePanel1 = new ImageVisualizer.PicturePanel();
+            this.basicPicturePanel1 = new ImageVisualizer.BasicPicturePanel();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.detailsLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.mousePositionLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.picturePanel1 = new ImageVisualizer.PicturePanel();
-            this.basicPicturePanel1 = new ImageVisualizer.BasicPicturePanel();
             this.menuStrip2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -167,6 +167,36 @@
             this.splitContainer1.SplitterDistance = 531;
             this.splitContainer1.TabIndex = 2;
             // 
+            // picturePanel1
+            // 
+            this.picturePanel1.AutoValidate = System.Windows.Forms.AutoValidate.Disable;
+            this.picturePanel1.BackColor = System.Drawing.Color.Magenta;
+            this.picturePanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.picturePanel1.Image = null;
+            this.picturePanel1.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+            this.picturePanel1.Location = new System.Drawing.Point(0, 0);
+            this.picturePanel1.Margin = new System.Windows.Forms.Padding(0);
+            this.picturePanel1.Name = "picturePanel1";
+            this.picturePanel1.SelectionRectangle = new System.Drawing.Rectangle(0, 0, 0, 0);
+            this.picturePanel1.Size = new System.Drawing.Size(531, 464);
+            this.picturePanel1.TabIndex = 1;
+            this.picturePanel1.Zoom = 1F;
+            // 
+            // basicPicturePanel1
+            // 
+            this.basicPicturePanel1.AutoValidate = System.Windows.Forms.AutoValidate.Disable;
+            this.basicPicturePanel1.BackColor = System.Drawing.Color.Magenta;
+            this.basicPicturePanel1.Image = null;
+            this.basicPicturePanel1.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+            this.basicPicturePanel1.Location = new System.Drawing.Point(0, 0);
+            this.basicPicturePanel1.Name = "basicPicturePanel1";
+            this.basicPicturePanel1.SelectionRectangle = new System.Drawing.Rectangle(0, 0, 0, 0);
+            this.basicPicturePanel1.Size = new System.Drawing.Size(161, 161);
+            this.basicPicturePanel1.TabIndex = 1;
+            this.basicPicturePanel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.basicPicturePanel1_MouseDown);
+            this.basicPicturePanel1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.basicPicturePanel1_MouseMove);
+            this.basicPicturePanel1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.basicPicturePanel1_MouseUp);
+            // 
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -193,38 +223,6 @@
             this.mousePositionLabel.Name = "mousePositionLabel";
             this.mousePositionLabel.Size = new System.Drawing.Size(118, 17);
             this.mousePositionLabel.Text = "mousePosition";
-            // 
-            // picturePanel1
-            // 
-            this.picturePanel1.AutoValidate = System.Windows.Forms.AutoValidate.Disable;
-            this.picturePanel1.BackColor = System.Drawing.Color.Magenta;
-            this.picturePanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.picturePanel1.GridSize = 16;
-            this.picturePanel1.Image = null;
-            this.picturePanel1.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-            this.picturePanel1.Location = new System.Drawing.Point(0, 0);
-            this.picturePanel1.Margin = new System.Windows.Forms.Padding(0);
-            this.picturePanel1.Name = "picturePanel1";
-            this.picturePanel1.SelectionRectangle = new System.Drawing.Rectangle(0, 0, 0, 0);
-            this.picturePanel1.Size = new System.Drawing.Size(531, 464);
-            this.picturePanel1.TabIndex = 1;
-            this.picturePanel1.Zoom = 1F;
-            // 
-            // basicPicturePanel1
-            // 
-            this.basicPicturePanel1.AutoValidate = System.Windows.Forms.AutoValidate.Disable;
-            this.basicPicturePanel1.BackColor = System.Drawing.Color.Magenta;
-            this.basicPicturePanel1.GridSize = 16;
-            this.basicPicturePanel1.Image = null;
-            this.basicPicturePanel1.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-            this.basicPicturePanel1.Location = new System.Drawing.Point(0, 0);
-            this.basicPicturePanel1.Name = "basicPicturePanel1";
-            this.basicPicturePanel1.SelectionRectangle = new System.Drawing.Rectangle(0, 0, 0, 0);
-            this.basicPicturePanel1.Size = new System.Drawing.Size(161, 161);
-            this.basicPicturePanel1.TabIndex = 1;
-            this.basicPicturePanel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.basicPicturePanel1_MouseDown);
-            this.basicPicturePanel1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.basicPicturePanel1_MouseMove);
-            this.basicPicturePanel1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.basicPicturePanel1_MouseUp);
             // 
             // ImageForm
             // 
