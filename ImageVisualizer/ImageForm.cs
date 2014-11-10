@@ -1,10 +1,4 @@
 ﻿//////////////////////////////////////////////////////////////////////
-// Zoom in on the mouse position
-// Sort out the zoom modes (list the enum in the menu?)
-// Save/restore options
-// Allow background colour option? \
-// Allow zoom out as well as in \
-// 
 
 using System;
 using System.Drawing;
@@ -13,6 +7,7 @@ using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Drawing.Imaging;
 
 //////////////////////////////////////////////////////////////////////
 
@@ -33,8 +28,8 @@ namespace ImageVisualizer
 
         public ImageForm(Image sourceImage)
         {
-            this.sourceImage = sourceImage;
             InitializeComponent();
+            this.sourceImage = sourceImage;
             StartPosition = FormStartPosition.Manual;
             var mousePos = Cursor.Position;
             Location = new Point(mousePos.X - this.Width / 2, Math.Max(0, mousePos.Y - this.Height / 2));
@@ -42,7 +37,13 @@ namespace ImageVisualizer
             detailsLabel.Text = String.Format("{0}x{1},{2}", sourceImage.Width, sourceImage.Height, fmt);
             this.ShowInTaskbar = true;
             picturePanel1.MouseMoved += picturePanel1_MouseMoved;
+            picturePanel1.MouseLeave += picturePanel1_MouseLeave;
             picturePanel1.ViewChanged += picturePanel1_ViewChanged;
+
+            gridSize = Properties.Settings.Default.GridSize;
+            picturePanel1.BackColor = Properties.Settings.Default.BackgroundColour;
+            basicPicturePanel1.BackColor = Properties.Settings.Default.BackgroundColour;
+            picturePanel1.InterpolationMode = Properties.Settings.Default.ZoomMode;
 
             // build the InterpolationMode menu
             string[] names = Enum.GetNames(typeof(InterpolationMode));
@@ -64,16 +65,22 @@ namespace ImageVisualizer
             }
 
             // sort out what grid size is selected by default
+            currentGridSizeMenuItem = null;
             foreach (ToolStripMenuItem m in gridToolStripMenuItem.DropDownItems)
             {
-                currentGridSizeMenuItem = m;
-                if (m.Checked)
+                int s = Convert.ToInt32(m.Tag);
+                if(s == gridSize)
                 {
-                    gridSize = (int)m.Tag;
-                    break;
+                    currentGridSizeMenuItem = m;
+                    m.Checked = true;
                 }
             }
-            currentGridSizeMenuItem.Checked = true;
+            if(currentGridSizeMenuItem == null)
+            {
+                currentGridSizeMenuItem = mediumToolStripMenuItem1;
+                currentGridSizeMenuItem.Checked = true;
+                gridSize = Convert.ToInt32(currentGridSizeMenuItem.Tag);
+            }
             BuildImage();
         }
 
@@ -182,14 +189,14 @@ namespace ImageVisualizer
 
         void picturePanel1_MouseMoved(object sender, PicturePanel.MouseMovedEventArgs e)
         {
-            if(e.mousePosition.X >= 0)
-            {
-                mousePositionLabel.Text = string.Format("{0},{1}", e.mousePosition.X, e.mousePosition.Y);
-            }
-            else
-            {
-                mousePositionLabel.Text = "";
-            }
+            mousePositionLabel.Text = e.message;
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        void picturePanel1_MouseLeave(object sender, EventArgs e)
+        {
+            mousePositionLabel.Text = "";
         }
 
         //////////////////////////////////////////////////////////////////////
@@ -248,7 +255,25 @@ namespace ImageVisualizer
 
         private void copyToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Clipboard.SetImage(picturePanel1.Image);
+            Rectangle r = picturePanel1.SelectionRectangle;
+            if(r.IsEmpty)
+            {
+                Clipboard.SetImage(picturePanel1.Image);
+            }
+            else
+            {
+                Bitmap b = new Bitmap(r.Width, r.Height);
+                using(Graphics g = Graphics.FromImage(b))
+                {
+                    g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                    g.CompositingQuality = CompositingQuality.HighQuality;
+                    g.CompositingMode = CompositingMode.SourceCopy;
+                    g.SmoothingMode = SmoothingMode.None;
+                    Rectangle destRect = new Rectangle(0, 0, r.Width, r.Height);
+                    g.DrawImage(picturePanel1.Image, destRect, r, GraphicsUnit.Pixel);
+                }
+                Clipboard.SetImage(b);
+            }
         }
 
         //////////////////////////////////////////////////////////////////////
@@ -274,20 +299,6 @@ namespace ImageVisualizer
 
         //////////////////////////////////////////////////////////////////////
 
-        private void mediumToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SetGridSize((ToolStripMenuItem)sender);
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
-        private void largeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SetGridSize((ToolStripMenuItem)sender);
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
         private void backgroundToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ColorDialog c = new ColorDialog();
@@ -306,6 +317,33 @@ namespace ImageVisualizer
         private void resetZoomToolStripMenuItem_Click(object sender, EventArgs e)
         {
             picturePanel1.Zoom = 1;
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog d = new SaveFileDialog();
+            d.CheckPathExists = true;
+            d.AutoUpgradeEnabled = true;
+            d.AddExtension = true;
+            d.DefaultExt = "png";
+            d.Filter = "png|*.png";
+            d.OverwritePrompt = true;
+            if(d.ShowDialog() == DialogResult.OK)
+            {
+                picturePanel1.Image.Save(d.FileName, ImageFormat.Png);
+            }
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        private void ImageForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Properties.Settings.Default.ZoomMode = picturePanel1.InterpolationMode;
+            Properties.Settings.Default.GridSize = gridSize;
+            Properties.Settings.Default.BackgroundColour = picturePanel1.BackColor;
+            Properties.Settings.Default.Save();
         }
     }
 }

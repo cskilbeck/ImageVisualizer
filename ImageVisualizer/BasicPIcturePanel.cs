@@ -10,15 +10,23 @@ using System.Windows.Forms;
 using System.Drawing.Drawing2D;
 using System.Diagnostics;
 
+//////////////////////////////////////////////////////////////////////
+
 namespace ImageVisualizer
 {
+    //////////////////////////////////////////////////////////////////////
+
     public partial class BasicPicturePanel : UserControl
     {
+        //////////////////////////////////////////////////////////////////////
+
         public RectangleF drawRectangle;
         protected Image image;
         private InterpolationMode interpolationMode = InterpolationMode.NearestNeighbor;
         protected Rectangle selectionRectangle = Rectangle.Empty;
         private Brush selectionBrush = new SolidBrush(Color.FromArgb(0xa0, 0, 0, 0));
+
+        //////////////////////////////////////////////////////////////////////
 
         public BasicPicturePanel()
         {
@@ -133,13 +141,13 @@ namespace ImageVisualizer
                     float dt = drawRectangle.Top;
                     float xs = drawRectangle.Width / image.Width;
                     float ys = drawRectangle.Height / image.Height;
-                    float l = selectionRectangle.Left * xs + dl;
-                    float r = selectionRectangle.Right * xs + dl;
-                    float t = selectionRectangle.Top * ys + dt;
-                    float b = selectionRectangle.Bottom * ys + dt;
-                    if(l >= 0 || r < Width || t >= 0 || b < Height)
+                    float l = (float)Math.Round(selectionRectangle.Left * xs + dl); // Round() to defeat pixel offset mode shenanigans
+                    float r = (float)Math.Round(selectionRectangle.Right * xs + dl);
+                    float t = (float)Math.Round(selectionRectangle.Top * ys + dt);
+                    float b = (float)Math.Round(selectionRectangle.Bottom * ys + dt);
+                    if(l > 1 || r < Width || t > 1 || b < Height)
                     {
-                        Rectangle s = new Rectangle((int)l, (int)t, (int)(r - l), (int)(b - t));
+                        Rectangle s = new Rectangle((int)l, (int)t, (int)(r - l - 1), (int)(b - t - 1));
                         e.Graphics.SmoothingMode = SmoothingMode.None;
                         e.Graphics.PixelOffsetMode = PixelOffsetMode.None;
                         e.Graphics.FillRectangle(selectionBrush, s);

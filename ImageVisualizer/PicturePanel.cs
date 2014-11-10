@@ -1,7 +1,4 @@
 ﻿//////////////////////////////////////////////////////////////////////
-// fit window to zoomed graphic if possible
-// 
-//////////////////////////////////////////////////////////////////////
 
 using System.Windows.Forms;
 using System.ComponentModel;
@@ -22,10 +19,11 @@ namespace ImageVisualizer
     {
         //////////////////////////////////////////////////////////////////////
 
-        private float[] zooms = { 1 / 5.0f, 1 / 4.0f, 1 / 3.0f, 1 / 2.0f, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
+        private float[] zooms = { 1 / 5.0f, 1 / 4.0f, 1 / 3.0f, 1 / 2.0f, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
         private int zoomLevel = 4;
         private float zoom = 1;
         private bool dragging = false;
+        private bool selecting = false;
         private Point dragStartPoint;
         private MouseButtons buttonHeld = MouseButtons.None;
 
@@ -41,9 +39,6 @@ namespace ImageVisualizer
             }
         }
 
-        public delegate void ViewChangedCallback(object sender, ViewChangedEventArgs e);
-        public event ViewChangedCallback ViewChanged;
-
         private void RaiseViewChangedEvent()
         {
             if(ViewChanged != null)
@@ -52,22 +47,26 @@ namespace ImageVisualizer
             }
         }
 
+        public delegate void ViewChangedCallback(object sender, ViewChangedEventArgs e);
+        public event ViewChangedCallback ViewChanged;
+
         //////////////////////////////////////////////////////////////////////
 
         public class MouseMovedEventArgs : EventArgs
         {
-            public Point mousePosition;
+            public string message;
 
-            public MouseMovedEventArgs(Point p)
+            public MouseMovedEventArgs(string m)
             {
-                mousePosition = p;
+                message = m;
             }
         }
-        private void RaiseMouseMovedEvent(int x, int y)
+
+        private void RaiseMouseMovedEvent(string message)
         {
             if(MouseMoved != null)
             {
-                MouseMoved.Invoke(this, new MouseMovedEventArgs(new Point(x, y)));
+                MouseMoved.Invoke(this, new MouseMovedEventArgs(message));
             }
         }
 
@@ -111,22 +110,29 @@ namespace ImageVisualizer
 
         //////////////////////////////////////////////////////////////////////
 
-        void PicturePanel_MouseUp(object sender, MouseEventArgs e)
-        {
-            Capture = false;
-            dragging = false;
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
         void PicturePanel_MouseDown(object sender, MouseEventArgs e)
         {
-            if(drawRectangle.Contains(e.Location))
+            switch (e.Button)
             {
-                Capture = true;
-                dragging = true;
-                dragStartPoint = e.Location;
-                buttonHeld = e.Button;
+                case MouseButtons.Right:
+                    if (drawRectangle.Contains(e.Location))
+                    {
+                        Capture = true;
+                        dragging = true;
+                        dragStartPoint = e.Location;
+                        buttonHeld = e.Button;
+                    }
+                    break;
+                case MouseButtons.Left:
+                    if (drawRectangle.Contains(e.Location))
+                    {
+                        dragStartPoint = PixelPositionFromControlPosition(e.Location);
+                        Capture = true;
+                        selecting = true;
+                        selectionRectangle = Rectangle.Empty;
+                        Invalidate();
+                    }
+                    break;
             }
         }
 
@@ -136,30 +142,64 @@ namespace ImageVisualizer
         {
             if (Image != null)
             {
+                string msg = "";
                 Focus();
-                if (MouseMoved != null)
+                Point p = PixelPositionFromControlPosition(e.Location);
+                if (!drawRectangle.Contains(e.Location))
                 {
-                    Point p = PixelPositionFromControlPosition(e.Location);
-                    if (!drawRectangle.Contains(e.Location))
-                    {
-                        p.X = p.Y = -1;
-                    }
-                    RaiseMouseMovedEvent(p.X, p.Y);
+                    p.X = p.Y = -1;
                 }
                 if (dragging)
                 {
+                    msg = string.Format("{0},{1}", p.X, p.Y);
                     switch (buttonHeld)
                     {
-                        case MouseButtons.Left:
+                        case MouseButtons.Right:
                             drawRectangle.Offset(e.X - dragStartPoint.X, e.Y - dragStartPoint.Y);
                             dragStartPoint = e.Location;
                             Invalidate();
                             RaiseViewChangedEvent();
                             break;
-                        case MouseButtons.Right:
+                        case MouseButtons.Left:
                             break;
                     }
                 }
+                else if(selecting)
+                {
+                    Point pixelPos = PixelPositionFromControlPosition(e.Location);
+                    int left = Math.Max(0, Math.Min(pixelPos.X, dragStartPoint.X));
+                    int top = Math.Max(0, Math.Min(pixelPos.Y, dragStartPoint.Y));
+                    int right = Math.Min(Image.Width, Math.Max(pixelPos.X, dragStartPoint.X));
+                    int bottom = Math.Min(Image.Height, Math.Max(pixelPos.Y, dragStartPoint.Y));
+                    selectionRectangle = new Rectangle(left, top, right - left + 1, bottom - top + 1);
+                    if (selectionRectangle.Height == 0 || selectionRectangle.Width == 0)
+                    {
+                        selectionRectangle = Rectangle.Empty;
+                        msg = string.Format("{0},{1}", p.X, p.Y);
+                    }
+                    else
+                    {
+                        msg = string.Format("{0},{1} - {2},{3} ({4},{5})", left, top, right, bottom, selectionRectangle.Width, selectionRectangle.Height);
+                    }
+                    Invalidate();
+                }
+                else if(p.X >= 0)
+                {
+                    msg = string.Format("{0},{1}", p.X, p.Y);
+                }
+                RaiseMouseMovedEvent(msg);
+            }
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        void PicturePanel_MouseUp(object sender, MouseEventArgs e)
+        {
+            Capture = false;
+            dragging = false;
+            if (selecting)
+            {
+                selecting = false;
             }
         }
 
