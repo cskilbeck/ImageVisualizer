@@ -56,19 +56,21 @@ namespace ImageVisualizer
         {
             public Point position;
             public string message;
+            public Color color;
 
-            public MouseMovedEventArgs(Point p, string m)
+            public MouseMovedEventArgs(Point p, string m, Color c)
             {
+                color = c;
                 position = p;
                 message = m;
             }
         }
 
-        private void RaiseMouseMovedEvent(Point position, string message)
+        private void RaiseMouseMovedEvent(Point position, string message, Color color)
         {
             if(MouseMoved != null)
             {
-                MouseMoved.Invoke(this, new MouseMovedEventArgs(position, message));
+                MouseMoved.Invoke(this, new MouseMovedEventArgs(position, message, color));
             }
         }
 
@@ -144,12 +146,18 @@ namespace ImageVisualizer
         {
             if (Image != null)
             {
+                Color c = Color.Transparent;
                 string msg = "";
                 Focus();
                 Point p = PixelPositionFromControlPosition(e.Location);
                 if (!drawRectangle.Contains(e.Location))
                 {
                     p.X = p.Y = -1;
+                }
+                else
+                {
+                    Bitmap b = Image as Bitmap;
+                    c = b.GetPixel(p.X, p.Y);
                 }
                 if (dragging)
                 {
@@ -184,7 +192,7 @@ namespace ImageVisualizer
                 {
                     msg = string.Format("{0},{1} - {2},{3} ({4},{5})", selectionRectangle.Left, selectionRectangle.Top, selectionRectangle.Right - 1, selectionRectangle.Bottom - 1, selectionRectangle.Width, selectionRectangle.Height);
                 }
-                RaiseMouseMovedEvent(p, msg);
+                RaiseMouseMovedEvent(p, msg, c);
             }
         }
 

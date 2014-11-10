@@ -122,11 +122,17 @@ namespace ImageVisualizer
             {
                 Graphics g = pevent.Graphics;
 
+                GraphicsState s = g.Save();
+
                 g.CompositingMode = CompositingMode.SourceCopy;
                 g.CompositingQuality = CompositingQuality.Default;
                 g.PixelOffsetMode = PixelOffsetMode.Default;
                 g.InterpolationMode = InterpolationMode.Default;
                 g.SmoothingMode = SmoothingMode.None;
+
+                RectangleF c = drawRectangle;
+                c.Offset(-1, -1);
+                g.Clip = new Region(c);
 
                 float xs = (float)Math.Floor(drawRectangle.Width / Image.Width * gridSize);
                 float ys = (float)Math.Floor(drawRectangle.Height / Image.Height * gridSize);
@@ -153,6 +159,7 @@ namespace ImageVisualizer
                         }
                     }
                 }
+                g.Restore(s);
             }
         }
 

@@ -47,6 +47,8 @@
             this.detailsLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.mousePositionLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.selectionDetailsLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.colorStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.colorDetailStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.picturePanel1 = new ImageVisualizer.PicturePanel();
             this.basicPicturePanel1 = new ImageVisualizer.BasicPicturePanel();
             this.menuStrip2.SuspendLayout();
@@ -200,7 +202,9 @@
             this.toolStripExpando.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.detailsLabel,
             this.mousePositionLabel,
-            this.selectionDetailsLabel});
+            this.selectionDetailsLabel,
+            this.colorStatusLabel,
+            this.colorDetailStatusLabel});
             this.toolStripExpando.Location = new System.Drawing.Point(0, 758);
             this.toolStripExpando.Name = "toolStripExpando";
             this.toolStripExpando.Size = new System.Drawing.Size(898, 22);
@@ -227,6 +231,21 @@
             this.selectionDetailsLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
             this.selectionDetailsLabel.Name = "selectionDetailsLabel";
             this.selectionDetailsLabel.Size = new System.Drawing.Size(200, 17);
+            // 
+            // colorStatusLabel
+            // 
+            this.colorStatusLabel.AutoSize = false;
+            this.colorStatusLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+            this.colorStatusLabel.Name = "colorStatusLabel";
+            this.colorStatusLabel.Size = new System.Drawing.Size(102, 17);
+            this.colorStatusLabel.Paint += new System.Windows.Forms.PaintEventHandler(this.colorStatusLabel_Paint);
+            // 
+            // colorDetailStatusLabel
+            // 
+            this.colorDetailStatusLabel.AutoSize = false;
+            this.colorDetailStatusLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+            this.colorDetailStatusLabel.Name = "colorDetailStatusLabel";
+            this.colorDetailStatusLabel.Size = new System.Drawing.Size(118, 17);
             // 
             // picturePanel1
             // 
@@ -310,6 +329,8 @@
         private System.Windows.Forms.ToolStripMenuItem backgroundColorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel selectionDetailsLabel;
+        private System.Windows.Forms.ToolStripStatusLabel colorStatusLabel;
+        private System.Windows.Forms.ToolStripStatusLabel colorDetailStatusLabel;
 
 
 

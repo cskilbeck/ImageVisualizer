@@ -22,6 +22,7 @@ namespace ImageVisualizer
         bool dragSelection;
         int gridSize;
         Image sourceImage;
+        Color pixelColor = Color.Transparent;
 
         //////////////////////////////////////////////////////////////////////
 
@@ -154,6 +155,8 @@ namespace ImageVisualizer
                 mousePositionLabel.Text = string.Format("{0},{1}", e.position.X, e.position.Y);
             }
             selectionDetailsLabel.Text = e.message;
+            colorDetailStatusLabel.Text = e.color.ToArgb().ToString("X8");
+            pixelColor = e.color;
         }
 
         //////////////////////////////////////////////////////////////////////
@@ -316,6 +319,32 @@ namespace ImageVisualizer
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        private void colorStatusLabel_Paint(object sender, PaintEventArgs e)
+        {
+            // draw alpha as black to white
+            // the rest as black to color
+            if(pixelColor.ToArgb() != 0)
+            {
+                Graphics gr = e.Graphics;
+                int p = pixelColor.ToArgb();
+                int s = 0xff << 24;
+                int t = (p >> 24) & 0xff;
+                Color r = Color.FromArgb(p & 0x00ff0000 | s);
+                Color g = Color.FromArgb(p & 0x0000ff00 | s);
+                Color b = Color.FromArgb(p & 0x000000ff | s);
+                Color a = Color.FromArgb(t | (t << 8) | (t << 16) | s);
+                gr.FillRectangle(new SolidBrush(a), new Rectangle(1, 1, 15, 15));
+                gr.FillRectangle(new SolidBrush(r), new Rectangle(17, 1, 15, 15));
+                gr.FillRectangle(new SolidBrush(g), new Rectangle(33, 1, 15, 15));
+                gr.FillRectangle(new SolidBrush(b), new Rectangle(49, 1, 15, 15));
+
+                gr.FillRectangle(new SolidBrush(Color.White), new Rectangle(78, 1, 15, 15));
+                gr.FillRectangle(new SolidBrush(pixelColor), new Rectangle(78, 1, 15, 15));
+            }
         }
     }
 }
