@@ -30,21 +30,23 @@
         {
             this.menuStrip2 = new System.Windows.Forms.MenuStrip();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.detailsLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.mousePositionLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.optionsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.optionsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.gridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.smallToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.mediumToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.largeToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.zoomModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetZoomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.backgroundColorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.toolStripExpando = new System.Windows.Forms.StatusStrip();
+            this.detailsLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.mousePositionLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.selectionDetailsLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.picturePanel1 = new ImageVisualizer.PicturePanel();
             this.basicPicturePanel1 = new ImageVisualizer.BasicPicturePanel();
             this.menuStrip2.SuspendLayout();
@@ -52,7 +54,7 @@
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            this.statusStrip1.SuspendLayout();
+            this.toolStripExpando.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip2
@@ -70,57 +72,27 @@
             // optionsToolStripMenuItem
             // 
             this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveAsToolStripMenuItem});
+            this.saveAsToolStripMenuItem,
+            this.exitToolStripMenuItem});
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             this.optionsToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.optionsToolStripMenuItem.Text = "&File";
             // 
-            // splitContainer1
+            // saveAsToolStripMenuItem
             // 
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
-            this.splitContainer1.IsSplitterFixed = true;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 24);
-            this.splitContainer1.Margin = new System.Windows.Forms.Padding(0);
-            this.splitContainer1.Name = "splitContainer1";
+            this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
+            this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.saveAsToolStripMenuItem.Text = "&Save As";
+            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
-            // splitContainer1.Panel1
+            // exitToolStripMenuItem
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.picturePanel1);
-            // 
-            // splitContainer1.Panel2
-            // 
-            this.splitContainer1.Panel2.Controls.Add(this.basicPicturePanel1);
-            this.splitContainer1.Size = new System.Drawing.Size(898, 734);
-            this.splitContainer1.SplitterDistance = 733;
-            this.splitContainer1.TabIndex = 2;
-            // 
-            // statusStrip1
-            // 
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.detailsLabel,
-            this.mousePositionLabel});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 758);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(898, 22);
-            this.statusStrip1.TabIndex = 3;
-            this.statusStrip1.Text = "statusStrip1";
-            // 
-            // detailsLabel
-            // 
-            this.detailsLabel.AutoSize = false;
-            this.detailsLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
-            this.detailsLabel.Name = "detailsLabel";
-            this.detailsLabel.Size = new System.Drawing.Size(150, 17);
-            this.detailsLabel.Text = "details";
-            // 
-            // mousePositionLabel
-            // 
-            this.mousePositionLabel.AutoSize = false;
-            this.mousePositionLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
-            this.mousePositionLabel.Name = "mousePositionLabel";
-            this.mousePositionLabel.Size = new System.Drawing.Size(200, 17);
-            this.mousePositionLabel.Text = "mousePosition";
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.exitToolStripMenuItem.Text = "E&xit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // editToolStripMenuItem
             // 
@@ -129,6 +101,14 @@
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "&Edit";
+            // 
+            // copyToolStripMenuItem
+            // 
+            this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
+            this.copyToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.copyToolStripMenuItem.Text = "&Copy";
+            this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
             // 
             // optionsToolStripMenuItem1
             // 
@@ -140,14 +120,6 @@
             this.optionsToolStripMenuItem1.Name = "optionsToolStripMenuItem1";
             this.optionsToolStripMenuItem1.Size = new System.Drawing.Size(61, 20);
             this.optionsToolStripMenuItem1.Text = "&Options";
-            // 
-            // copyToolStripMenuItem
-            // 
-            this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-            this.copyToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
-            this.copyToolStripMenuItem.Text = "&Copy";
-            this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
             // 
             // gridToolStripMenuItem
             // 
@@ -169,8 +141,6 @@
             // 
             // mediumToolStripMenuItem1
             // 
-            this.mediumToolStripMenuItem1.Checked = true;
-            this.mediumToolStripMenuItem1.CheckState = System.Windows.Forms.CheckState.Checked;
             this.mediumToolStripMenuItem1.Name = "mediumToolStripMenuItem1";
             this.mediumToolStripMenuItem1.Size = new System.Drawing.Size(119, 22);
             this.mediumToolStripMenuItem1.Tag = "16";
@@ -198,20 +168,65 @@
             this.resetZoomToolStripMenuItem.Text = "&Reset zoom";
             this.resetZoomToolStripMenuItem.Click += new System.EventHandler(this.resetZoomToolStripMenuItem_Click);
             // 
-            // saveAsToolStripMenuItem
-            // 
-            this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
-            this.saveAsToolStripMenuItem.Text = "&Save As";
-            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
-            // 
             // backgroundColorToolStripMenuItem
             // 
             this.backgroundColorToolStripMenuItem.Name = "backgroundColorToolStripMenuItem";
             this.backgroundColorToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.backgroundColorToolStripMenuItem.Text = "&Background color";
             this.backgroundColorToolStripMenuItem.Click += new System.EventHandler(this.backgroundToolStripMenuItem_Click);
+            // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
+            this.splitContainer1.IsSplitterFixed = true;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 24);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(0);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.picturePanel1);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.basicPicturePanel1);
+            this.splitContainer1.Size = new System.Drawing.Size(898, 734);
+            this.splitContainer1.SplitterDistance = 733;
+            this.splitContainer1.TabIndex = 2;
+            // 
+            // toolStripExpando
+            // 
+            this.toolStripExpando.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.detailsLabel,
+            this.mousePositionLabel,
+            this.selectionDetailsLabel});
+            this.toolStripExpando.Location = new System.Drawing.Point(0, 758);
+            this.toolStripExpando.Name = "toolStripExpando";
+            this.toolStripExpando.Size = new System.Drawing.Size(898, 22);
+            this.toolStripExpando.TabIndex = 3;
+            this.toolStripExpando.Text = "statusStrip1";
+            // 
+            // detailsLabel
+            // 
+            this.detailsLabel.AutoSize = false;
+            this.detailsLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+            this.detailsLabel.Name = "detailsLabel";
+            this.detailsLabel.Size = new System.Drawing.Size(150, 17);
+            // 
+            // mousePositionLabel
+            // 
+            this.mousePositionLabel.AutoSize = false;
+            this.mousePositionLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+            this.mousePositionLabel.Name = "mousePositionLabel";
+            this.mousePositionLabel.Size = new System.Drawing.Size(100, 17);
+            // 
+            // selectionDetailsLabel
+            // 
+            this.selectionDetailsLabel.AutoSize = false;
+            this.selectionDetailsLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+            this.selectionDetailsLabel.Name = "selectionDetailsLabel";
+            this.selectionDetailsLabel.Size = new System.Drawing.Size(200, 17);
             // 
             // picturePanel1
             // 
@@ -250,7 +265,7 @@
             this.ClientSize = new System.Drawing.Size(898, 780);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.menuStrip2);
-            this.Controls.Add(this.statusStrip1);
+            this.Controls.Add(this.toolStripExpando);
             this.DoubleBuffered = true;
             this.KeyPreview = true;
             this.MinimizeBox = false;
@@ -265,8 +280,8 @@
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
+            this.toolStripExpando.ResumeLayout(false);
+            this.toolStripExpando.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -278,7 +293,7 @@
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private PicturePanel picturePanel1;
-        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.StatusStrip toolStripExpando;
         private System.Windows.Forms.ToolStripStatusLabel detailsLabel;
         private System.Windows.Forms.ToolStripStatusLabel mousePositionLabel;
         private BasicPicturePanel basicPicturePanel1;
@@ -293,6 +308,8 @@
         private System.Windows.Forms.ToolStripMenuItem zoomModeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem resetZoomToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem backgroundColorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripStatusLabel selectionDetailsLabel;
 
 
 

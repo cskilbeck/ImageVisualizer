@@ -54,19 +54,21 @@ namespace ImageVisualizer
 
         public class MouseMovedEventArgs : EventArgs
         {
+            public Point position;
             public string message;
 
-            public MouseMovedEventArgs(string m)
+            public MouseMovedEventArgs(Point p, string m)
             {
+                position = p;
                 message = m;
             }
         }
 
-        private void RaiseMouseMovedEvent(string message)
+        private void RaiseMouseMovedEvent(Point position, string message)
         {
             if(MouseMoved != null)
             {
-                MouseMoved.Invoke(this, new MouseMovedEventArgs(message));
+                MouseMoved.Invoke(this, new MouseMovedEventArgs(position, message));
             }
         }
 
@@ -151,7 +153,6 @@ namespace ImageVisualizer
                 }
                 if (dragging)
                 {
-                    msg = string.Format("{0},{1}", p.X, p.Y);
                     switch (buttonHeld)
                     {
                         case MouseButtons.Right:
@@ -169,25 +170,21 @@ namespace ImageVisualizer
                     Point pixelPos = PixelPositionFromControlPosition(e.Location);
                     int left = Math.Max(0, Math.Min(pixelPos.X, dragStartPoint.X));
                     int top = Math.Max(0, Math.Min(pixelPos.Y, dragStartPoint.Y));
-                    int right = Math.Min(Image.Width, Math.Max(pixelPos.X, dragStartPoint.X));
-                    int bottom = Math.Min(Image.Height, Math.Max(pixelPos.Y, dragStartPoint.Y));
+                    int right = Math.Min(Image.Width - 1, Math.Max(pixelPos.X, dragStartPoint.X));
+                    int bottom = Math.Min(Image.Height - 1, Math.Max(pixelPos.Y, dragStartPoint.Y));
                     selectionRectangle = new Rectangle(left, top, right - left + 1, bottom - top + 1);
                     if (selectionRectangle.Height == 0 || selectionRectangle.Width == 0)
                     {
                         selectionRectangle = Rectangle.Empty;
-                        msg = string.Format("{0},{1}", p.X, p.Y);
-                    }
-                    else
-                    {
-                        msg = string.Format("{0},{1} - {2},{3} ({4},{5})", left, top, right, bottom, selectionRectangle.Width, selectionRectangle.Height);
                     }
                     Invalidate();
                 }
-                else if(p.X >= 0)
+                
+                if(!selectionRectangle.IsEmpty)
                 {
-                    msg = string.Format("{0},{1}", p.X, p.Y);
+                    msg = string.Format("{0},{1} - {2},{3} ({4},{5})", selectionRectangle.Left, selectionRectangle.Top, selectionRectangle.Right - 1, selectionRectangle.Bottom - 1, selectionRectangle.Width, selectionRectangle.Height);
                 }
-                RaiseMouseMovedEvent(msg);
+                RaiseMouseMovedEvent(p, msg);
             }
         }
 
@@ -214,7 +211,7 @@ namespace ImageVisualizer
                 float x = (float)(e.Location.X - drawRectangle.X) / drawRectangle.Width;
                 float y = (float)(e.Location.Y - drawRectangle.Y) / drawRectangle.Height;
                 drawRectangle.Width = Image.Width * newZoom;
-                drawRectangle.Height = Image.Width * newZoom;
+                drawRectangle.Height = Image.Height * newZoom;
                 drawRectangle.X = e.Location.X - drawRectangle.Width * x;
                 drawRectangle.Y = e.Location.Y - drawRectangle.Height * y;
                 zoom = newZoom;

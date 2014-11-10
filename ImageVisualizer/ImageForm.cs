@@ -21,7 +21,6 @@ namespace ImageVisualizer
         ToolStripMenuItem currentGridSizeMenuItem;
         bool dragSelection;
         int gridSize;
-        Image image;
         Image sourceImage;
 
         //////////////////////////////////////////////////////////////////////
@@ -41,6 +40,8 @@ namespace ImageVisualizer
             picturePanel1.ViewChanged += picturePanel1_ViewChanged;
 
             gridSize = Properties.Settings.Default.GridSize;
+            picturePanel1.gridSize = gridSize;
+            basicPicturePanel1.gridSize = 0;
             picturePanel1.BackColor = Properties.Settings.Default.BackgroundColour;
             basicPicturePanel1.BackColor = Properties.Settings.Default.BackgroundColour;
             picturePanel1.InterpolationMode = Properties.Settings.Default.ZoomMode;
@@ -80,6 +81,7 @@ namespace ImageVisualizer
                 currentGridSizeMenuItem = mediumToolStripMenuItem1;
                 currentGridSizeMenuItem.Checked = true;
                 gridSize = Convert.ToInt32(currentGridSizeMenuItem.Tag);
+                picturePanel1.gridSize = gridSize;
             }
             BuildImage();
         }
@@ -88,50 +90,8 @@ namespace ImageVisualizer
 
         void BuildImage()
         {
-            image = OverlayImage(Checkerboard(sourceImage.Width, sourceImage.Height, gridSize), sourceImage);
-            picturePanel1.Image = image;
-            basicPicturePanel1.Image = image;
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
-        Bitmap Checkerboard(int width, int height, int gridSize)
-        {
-            Bitmap bmp = new Bitmap(width, height);
-            Brush[] brush = { Brushes.LightGray, Brushes.DarkGray };
-            int yBrush = 0;
-            Rectangle r = new Rectangle(0, 0, gridSize, gridSize);
-            using (Graphics g = Graphics.FromImage(bmp))
-            {
-                for (int y = 0; y < height; y += gridSize)
-                {
-                    int xBrush = yBrush;
-                    r.Y = y;
-                    for (int x = 0; x < width; x += gridSize)
-                    {
-                        r.X = x;
-                        g.FillRectangle(brush[xBrush], r);
-                        xBrush = 1 - xBrush;
-                    }
-                    yBrush = 1 - yBrush;
-                }
-            }
-            return bmp;
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
-        Image OverlayImage(Image dest, Image source)
-        {
-            using (Graphics g = Graphics.FromImage(dest))
-            {
-                g.InterpolationMode = InterpolationMode.NearestNeighbor;
-                g.PixelOffsetMode = PixelOffsetMode.None;
-                g.CompositingMode = CompositingMode.SourceOver;
-                Rectangle d = new Rectangle(0, 0, dest.Width, dest.Height);
-                g.DrawImage(source, d, 0, 0, source.Width, source.Height, GraphicsUnit.Pixel);
-            }
-            return dest;
+            picturePanel1.Image = sourceImage;
+            basicPicturePanel1.Image = sourceImage;
         }
 
         //////////////////////////////////////////////////////////////////////
@@ -189,7 +149,11 @@ namespace ImageVisualizer
 
         void picturePanel1_MouseMoved(object sender, PicturePanel.MouseMovedEventArgs e)
         {
-            mousePositionLabel.Text = e.message;
+            if(e.position.X >= 0)
+            {
+                mousePositionLabel.Text = string.Format("{0},{1}", e.position.X, e.position.Y);
+            }
+            selectionDetailsLabel.Text = e.message;
         }
 
         //////////////////////////////////////////////////////////////////////
@@ -287,6 +251,7 @@ namespace ImageVisualizer
             currentGridSizeMenuItem = m;
             currentGridSizeMenuItem.Checked = true;
             gridSize = Convert.ToInt32(currentGridSizeMenuItem.Tag);
+            picturePanel1.gridSize = gridSize;
             BuildImage();
         }
 
@@ -344,6 +309,13 @@ namespace ImageVisualizer
             Properties.Settings.Default.GridSize = gridSize;
             Properties.Settings.Default.BackgroundColour = picturePanel1.BackColor;
             Properties.Settings.Default.Save();
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
 }

@@ -20,7 +20,7 @@ namespace Test
 
         private void Form1_Shown(object sender, EventArgs e)
         {
-            Bitmap b = new Bitmap(64, 64);
+            Bitmap b = new Bitmap(64, 128);
             using(Graphics g = Graphics.FromImage(b))
             {
                 SolidBrush brush = new SolidBrush(Color.FromArgb(128, 128, 255, 64));
