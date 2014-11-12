@@ -25,12 +25,24 @@ namespace ImageVisualizer
         Image sourceImage;
         Color pixelColor = Color.Transparent;
         bool showPixelColor;
+        bool thumbnailVisible;
+        int thumbnailAlign;
+
+        enum ThumbnailAlign : int
+        {
+            Horizontal = 1,      // Left = 0, Right = 1
+            Vertical = 2       // Top = 0, Bottom = 1
+        }
 
         //////////////////////////////////////////////////////////////////////
 
         public ImageForm(Image image)
         {
             InitializeComponent();
+
+            LoadSettings();
+
+            SetupThumbnail();
             originalImage = image;
             sourceImage = image;
             StartPosition = FormStartPosition.Manual;
@@ -43,12 +55,8 @@ namespace ImageVisualizer
             picturePanel1.MouseLeave += picturePanel1_MouseLeave;
             picturePanel1.ViewChanged += picturePanel1_ViewChanged;
 
-            gridSize = Properties.Settings.Default.GridSize;
             picturePanel1.gridSize = gridSize;
-            basicPicturePanel1.gridSize = 0;
-            picturePanel1.BackColor = Properties.Settings.Default.BackgroundColour;
-            basicPicturePanel1.BackColor = Properties.Settings.Default.BackgroundColour;
-            picturePanel1.InterpolationMode = Properties.Settings.Default.ZoomMode;
+            thumbnailPanel.gridSize = 0;
 
             // build the InterpolationMode menu
             string[] names = Enum.GetNames(typeof(InterpolationMode));
@@ -95,7 +103,7 @@ namespace ImageVisualizer
         void BuildImage()
         {
             picturePanel1.Image = sourceImage;
-            basicPicturePanel1.Image = sourceImage;
+            thumbnailPanel.Image = sourceImage;
         }
 
         //////////////////////////////////////////////////////////////////////
@@ -112,7 +120,7 @@ namespace ImageVisualizer
                 m.Checked = true;
                 currentInterpolationModeMenuItem = m;
                 picturePanel1.InterpolationMode = (InterpolationMode)m.Tag;
-                basicPicturePanel1.InterpolationMode = (InterpolationMode)m.Tag;
+                thumbnailPanel.InterpolationMode = (InterpolationMode)m.Tag;
                 // !?
             }
         }
@@ -137,7 +145,7 @@ namespace ImageVisualizer
             }
             else
             {
-                basicPicturePanel1.SelectionRectangle = Rectangle.Empty;
+                thumbnailPanel.SelectionRectangle = Rectangle.Empty;
             }
         }
 
@@ -145,7 +153,7 @@ namespace ImageVisualizer
 
         bool ApplySelectionRectangle(Rectangle rc)
         {
-            basicPicturePanel1.SelectionRectangle = rc;
+            thumbnailPanel.SelectionRectangle = rc;
             return true;
         }
 
@@ -172,6 +180,8 @@ namespace ImageVisualizer
 
         void picturePanel1_MouseLeave(object sender, EventArgs e)
         {
+            showPixelColor = false;
+            colorDetailStatusLabel.Text = "";
             mousePositionLabel.Text = "";
         }
 
@@ -179,8 +189,8 @@ namespace ImageVisualizer
 
         private void SetSelectionRectangle(Point pos)
         {
-            Point p = basicPicturePanel1.PixelPositionFromControlPosition(pos);
-            Rectangle r = basicPicturePanel1.SelectionRectangle;
+            Point p = thumbnailPanel.PixelPositionFromControlPosition(pos);
+            Rectangle r = thumbnailPanel.SelectionRectangle;
             p.X -= r.Width / 2;
             p.Y -= r.Height / 2;
             r.Location = p;
@@ -203,7 +213,7 @@ namespace ImageVisualizer
 
         private void basicPicturePanel1_MouseDown(object sender, MouseEventArgs e)
         {
-            if(!basicPicturePanel1.SelectionRectangle.IsEmpty)
+            if(!thumbnailPanel.SelectionRectangle.IsEmpty)
             {
                 dragSelection = true;
                 SetSelectionRectangle(e.Location);
@@ -285,7 +295,7 @@ namespace ImageVisualizer
             c.Color = picturePanel1.BackColor;
             if (c.ShowDialog() == DialogResult.OK)
             {
-                picturePanel1.BackColor = basicPicturePanel1.BackColor = c.Color;
+                picturePanel1.BackColor = thumbnailPanel.BackColor = c.Color;
             }
         }
 
@@ -315,12 +325,33 @@ namespace ImageVisualizer
 
         //////////////////////////////////////////////////////////////////////
 
-        private void ImageForm_FormClosing(object sender, FormClosingEventArgs e)
+        void LoadSettings()
+        {
+            thumbnailVisible = Properties.Settings.Default.Thumbnail;
+            thumbnailAlign = Properties.Settings.Default.ThumbnailAlign;
+            gridSize = Properties.Settings.Default.GridSize;
+            picturePanel1.BackColor = Properties.Settings.Default.BackgroundColour;
+            thumbnailPanel.BackColor = Properties.Settings.Default.BackgroundColour;
+            picturePanel1.InterpolationMode = Properties.Settings.Default.ZoomMode;
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        void SaveSettings()
         {
             Properties.Settings.Default.ZoomMode = picturePanel1.InterpolationMode;
             Properties.Settings.Default.GridSize = gridSize;
             Properties.Settings.Default.BackgroundColour = picturePanel1.BackColor;
+            Properties.Settings.Default.Thumbnail = thumbnailVisible;
+            Properties.Settings.Default.ThumbnailAlign = thumbnailAlign;
             Properties.Settings.Default.Save();
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        private void ImageForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            SaveSettings();
         }
 
         //////////////////////////////////////////////////////////////////////
@@ -485,6 +516,87 @@ namespace ImageVisualizer
                 }
             }
 
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        void SetupThumbnail()
+        {
+            int x = 0;
+            int y = picturePanel1.Top;
+            AnchorStyles anchor = AnchorStyles.Left | AnchorStyles.Top;
+            bool leftCheck = true;
+            bool rightCheck = false;
+            bool topCheck = true;
+            bool bottomCheck = false;
+            offToolStripMenuItem.Text = thumbnailVisible ? "&Off" : "&On";
+            thumbnailPanel.Visible = thumbnailVisible;
+            if ((thumbnailAlign & (int)ThumbnailAlign.Horizontal) != 0)
+            {
+                x = Width - thumbnailPanel.Width;
+                anchor |= AnchorStyles.Right;
+                anchor &= ~AnchorStyles.Left;
+                leftCheck = false;
+                rightCheck = true;
+            }
+            if ((thumbnailAlign & (int)ThumbnailAlign.Vertical) != 0)
+            {
+                y = toolStripExpando.Top - thumbnailPanel.Height;
+                anchor |= AnchorStyles.Bottom;
+                anchor &= ~AnchorStyles.Top;
+                topCheck = false;
+                bottomCheck = true;
+            }
+            leftToolStripMenuItem.Checked = leftCheck;
+            rightToolStripMenuItem.Checked = rightCheck;
+            topToolStripMenuItem.Checked = topCheck;
+            bottomToolStripMenuItem.Checked = bottomCheck;
+            thumbnailPanel.Location = new Point(x, y);
+            thumbnailPanel.Anchor = anchor;
+            leftToolStripMenuItem.Enabled = thumbnailVisible;
+            rightToolStripMenuItem.Enabled = thumbnailVisible;
+            topToolStripMenuItem.Enabled = thumbnailVisible;
+            bottomToolStripMenuItem.Enabled = thumbnailVisible;
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        private void offToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            thumbnailVisible = !thumbnailVisible;
+            SetupThumbnail();
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        private void leftToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            thumbnailAlign &= ~1;
+            SetupThumbnail();
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        private void rightToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            thumbnailAlign |= 1;
+            SetupThumbnail();
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        private void topToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            thumbnailAlign &= ~2;
+            SetupThumbnail();
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        private void bottomToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            thumbnailAlign |= 2;
+            SetupThumbnail();
         }
     }
 }

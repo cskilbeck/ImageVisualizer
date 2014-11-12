@@ -11,5 +11,11 @@
     <Setting Name="ZoomMode" Type="System.Drawing.Drawing2D.InterpolationMode" Scope="User">
       <Value Profile="(Default)">NearestNeighbor</Value>
     </Setting>
+    <Setting Name="Thumbnail" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ThumbnailAlign" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">3</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

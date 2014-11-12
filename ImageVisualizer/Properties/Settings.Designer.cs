@@ -58,5 +58,29 @@ namespace ImageVisualizer.Properties {
                 this["ZoomMode"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Thumbnail {
+            get {
+                return ((bool)(this["Thumbnail"]));
+            }
+            set {
+                this["Thumbnail"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("3")]
+        public int ThumbnailAlign {
+            get {
+                return ((int)(this["ThumbnailAlign"]));
+            }
+            set {
+                this["ThumbnailAlign"] = value;
+            }
+        }
     }
 }
