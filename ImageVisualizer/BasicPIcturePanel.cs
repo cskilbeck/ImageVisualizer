@@ -25,7 +25,7 @@ namespace ImageVisualizer
         protected Image image;
         private InterpolationMode interpolationMode = InterpolationMode.NearestNeighbor;
         protected Rectangle selectionRectangle = Rectangle.Empty;
-        private Brush selectionBrush = new SolidBrush(Color.FromArgb(0xa0, 0, 0, 0));
+        private Brush selectionBrush = new SolidBrush(Color.FromArgb(0xa0, 0x60, 0x60, 0x60));
         public int gridSize = 16;
 
         //////////////////////////////////////////////////////////////////////
@@ -201,7 +201,7 @@ namespace ImageVisualizer
                     float r = (float)Math.Floor(selectionRectangle.Right * xs + dl);
                     float t = (float)Math.Floor(selectionRectangle.Top * ys + dt);
                     float b = (float)Math.Floor(selectionRectangle.Bottom * ys + dt);
-                    if(l > 1 || r < Width || t > 1 || b < Height)
+                    //if(l > 1 || r < Width || t > 1 || b < Height)
                     {
                         Rectangle s = new Rectangle((int)l, (int)t, (int)(r - l - 1), (int)(b - t - 1));
                         e.Graphics.SmoothingMode = SmoothingMode.None;

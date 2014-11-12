@@ -32,9 +32,11 @@ namespace ImageVisualizer
         public class ViewChangedEventArgs : EventArgs
         {
             public RectangleF drawRectangle;
+            public bool showIt;
 
-            public ViewChangedEventArgs(RectangleF r)
+            public ViewChangedEventArgs(RectangleF r, bool show)
             {
+                showIt = show;
                 drawRectangle = r;
             }
         }
@@ -43,7 +45,8 @@ namespace ImageVisualizer
         {
             if(ViewChanged != null)
             {
-                ViewChanged.Invoke(this, new ViewChangedEventArgs(drawRectangle));
+                bool s = drawRectangle.X < 0 || drawRectangle.Right >= Width || drawRectangle.Y < 0 || drawRectangle.Bottom >= Height;
+                ViewChanged.Invoke(this, new ViewChangedEventArgs(drawRectangle, s));
             }
         }
 

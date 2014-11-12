@@ -21,15 +21,18 @@ namespace ImageVisualizer
         ToolStripMenuItem currentGridSizeMenuItem;
         bool dragSelection;
         int gridSize;
+        Image originalImage;
         Image sourceImage;
         Color pixelColor = Color.Transparent;
+        bool showPixelColor;
 
         //////////////////////////////////////////////////////////////////////
 
-        public ImageForm(Image sourceImage)
+        public ImageForm(Image image)
         {
             InitializeComponent();
-            this.sourceImage = sourceImage;
+            originalImage = image;
+            sourceImage = image;
             StartPosition = FormStartPosition.Manual;
             var mousePos = Cursor.Position;
             Location = new Point(mousePos.X - this.Width / 2, Math.Max(0, mousePos.Y - this.Height / 2));
@@ -118,7 +121,7 @@ namespace ImageVisualizer
 
         void picturePanel1_ViewChanged(object sender, PicturePanel.ViewChangedEventArgs e)
         {
-            if(picturePanel1.Image != null)
+            if(picturePanel1.Image != null && e.showIt)
             {
                 RectangleF d = e.drawRectangle;
 
@@ -132,30 +135,36 @@ namespace ImageVisualizer
 
                 ApplySelectionRectangle(new Rectangle((int)l, (int)t, (int)w, (int)h));
             }
+            else
+            {
+                basicPicturePanel1.SelectionRectangle = Rectangle.Empty;
+            }
         }
 
         //////////////////////////////////////////////////////////////////////
 
         bool ApplySelectionRectangle(Rectangle rc)
         {
-            Image image = picturePanel1.Image;
-            {
-                basicPicturePanel1.SelectionRectangle = rc;
-                return true;
-            }
-
+            basicPicturePanel1.SelectionRectangle = rc;
+            return true;
         }
 
         //////////////////////////////////////////////////////////////////////
 
         void picturePanel1_MouseMoved(object sender, PicturePanel.MouseMovedEventArgs e)
         {
+            string m = "";
+            string c = "";
+            showPixelColor = false;
             if(e.position.X >= 0)
             {
-                mousePositionLabel.Text = string.Format("{0},{1}", e.position.X, e.position.Y);
+                showPixelColor = true;
+                m = string.Format("{0},{1}", e.position.X, e.position.Y);
+                c = e.color.ToArgb().ToString("X8");
             }
+            mousePositionLabel.Text = m;
             selectionDetailsLabel.Text = e.message;
-            colorDetailStatusLabel.Text = e.color.ToArgb().ToString("X8");
+            colorDetailStatusLabel.Text = c;
             pixelColor = e.color;
         }
 
@@ -327,7 +336,7 @@ namespace ImageVisualizer
         {
             // draw alpha as black to white
             // the rest as black to color
-            if(pixelColor.ToArgb() != 0)
+            if(showPixelColor)
             {
                 Graphics gr = e.Graphics;
                 int p = pixelColor.ToArgb();
@@ -342,9 +351,140 @@ namespace ImageVisualizer
                 gr.FillRectangle(new SolidBrush(g), new Rectangle(33, 1, 15, 15));
                 gr.FillRectangle(new SolidBrush(b), new Rectangle(49, 1, 15, 15));
 
-                gr.FillRectangle(new SolidBrush(Color.White), new Rectangle(78, 1, 15, 15));
+                Brush[] brush = { Brushes.LightGray, Brushes.DarkGray };
+                int yBrush = 0;
+                RectangleF rc = new RectangleF(0, 0, 3, 3);
+                {
+                    for (float y = 0; y < 15; y += 3)
+                    {
+                        int xBrush = yBrush;
+                        rc.Y = y + 1;
+                        for (float x = 0; x < 15; x += 3)
+                        {
+                            rc.X = x + 78;
+                            gr.FillRectangle(brush[xBrush], rc);
+                            xBrush = 1 - xBrush;
+                        }
+                        yBrush = 1 - yBrush;
+                    }
+                }
+
                 gr.FillRectangle(new SolidBrush(pixelColor), new Rectangle(78, 1, 15, 15));
             }
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        private static byte[] GetPixels(Bitmap b)
+        {
+            Rectangle r = new Rectangle(Point.Empty, b.Size);
+            BitmapData d = b.LockBits(r, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            IntPtr p = d.Scan0;
+            int len = d.Height * d.Stride;
+            byte[] pixels = new byte[len];
+            Marshal.Copy(d.Scan0, pixels, 0, len);
+            b.UnlockBits(d);
+            return pixels;
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        private static void SetPixels(Bitmap b, byte[] bytes)
+        {
+            Rectangle r = new Rectangle(Point.Empty, b.Size);
+            BitmapData d = b.LockBits(r, ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+            IntPtr p = d.Scan0;
+            int len = d.Height * d.Stride;
+            if(bytes.Length < len)
+            {
+                throw new System.ArgumentException();
+            }
+            Marshal.Copy(bytes, 0, d.Scan0, len);
+            b.UnlockBits(d);
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        private void alphaChannelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Bitmap b = originalImage as Bitmap;
+            if (b != null)
+            {
+                byte[] pixels = GetPixels(b);
+                int len = pixels.Length;
+                for (int i = 0; i < len; i += 4)
+                {
+                    pixels[i + 0] = pixels[i + 1] = pixels[i + 2] = pixels[i + 3];
+                    pixels[i + 3] = 0xff;
+                }
+                Bitmap n = new Bitmap(b.Width, b.Height, PixelFormat.Format32bppArgb);
+                SetPixels(n, pixels);
+                picturePanel1.Image = n;
+            }
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        private void maskToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Bitmap b = originalImage as Bitmap;
+            if (b != null)
+            {
+                byte[] pixels = GetPixels(b);
+                int len = pixels.Length;
+                for (int i = 0; i < len; i += 4)
+                {
+                    int p = pixels[i + 0] + pixels[i + 1] + pixels[i + 2] + pixels[i + 3];
+                    byte r = (byte)((p != 0) ? (byte)255 : 0);
+                    pixels[i + 0] = pixels[i + 1] = pixels[i + 2] = pixels[i + 3] = r;
+                }
+                Bitmap n = new Bitmap(b.Width, b.Height, PixelFormat.Format32bppArgb);
+                SetPixels(n, pixels);
+                picturePanel1.Image = n;
+            }
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        private void originalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            picturePanel1.Image = originalImage;
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        private void selectExtentToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // scan the bitmap for non-empty pixels and set the selection rectangle accordingly
+            Bitmap b = originalImage as Bitmap;
+            if(b != null)
+            {
+                int w = b.Width;
+                int h = b.Height;
+                int xmin = w;
+                int ymin = h;
+                int xmax = -1;
+                int ymax = -1;
+                for(int y = 0; y < h; ++y)
+                {
+                    for (int x = 0; x < w; ++x)
+                    {
+                        if(b.GetPixel(x, y).ToArgb() != 0)
+                        {
+                            xmin = Math.Min(xmin, x);
+                            ymin = Math.Min(ymin, y);
+                            xmax = Math.Max(xmax, x);
+                            ymax = Math.Max(ymax, y);
+                        }
+                    }
+                }
+                if(xmin != -1)
+                {
+                    picturePanel1.SelectionRectangle = new Rectangle(xmin, ymin, xmax - xmin + 1, ymax - ymin + 1);
+                    picturePanel1.Invalidate();
+                }
+            }
+
         }
     }
 }
