@@ -1,4 +1,5 @@
 ﻿//////////////////////////////////////////////////////////////////////
+// Settings don't save when it's used as a VS Visualizer...
 
 using System;
 using System.Drawing;
