@@ -27,6 +27,16 @@ namespace ImageVisualizer
         protected Rectangle selectionRectangle = Rectangle.Empty;
         private Brush selectionBrush = new SolidBrush(Color.FromArgb(0xa0, 0x60, 0x60, 0x60));
         public int gridSize = 16;
+        private Brush[] gridBrushes = { Brushes.DarkGray, Brushes.LightGray };
+
+        //////////////////////////////////////////////////////////////////////
+
+        public void SetGridColors(Color[] colours)
+        {
+            gridBrushes[0] = new SolidBrush(colours[0]);
+            gridBrushes[1] = new SolidBrush(colours[1]);
+            Invalidate();
+        }
 
         //////////////////////////////////////////////////////////////////////
 
@@ -141,7 +151,6 @@ namespace ImageVisualizer
 
                 if (xs >= 2 && ys >= 2)
                 {
-                    Brush[] brush = { Brushes.LightGray, Brushes.DarkGray };
                     int yBrush = 0;
                     RectangleF r = new RectangleF(0, 0, xs, ys);
                     {
@@ -152,7 +161,7 @@ namespace ImageVisualizer
                             for (float x = 0; x < drawRectangle.Width; x += xs)
                             {
                                 r.X = x + xorg;
-                                g.FillRectangle(brush[xBrush], r);
+                                g.FillRectangle(gridBrushes[xBrush], r);
                                 xBrush = 1 - xBrush;
                             }
                             yBrush = 1 - yBrush;

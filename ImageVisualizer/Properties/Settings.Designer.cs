@@ -82,5 +82,29 @@ namespace ImageVisualizer.Properties {
                 this["ThumbnailAlign"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("LightGray")]
+        public global::System.Drawing.Color GridColor1 {
+            get {
+                return ((global::System.Drawing.Color)(this["GridColor1"]));
+            }
+            set {
+                this["GridColor1"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("DarkGray")]
+        public global::System.Drawing.Color GridColor2 {
+            get {
+                return ((global::System.Drawing.Color)(this["GridColor2"]));
+            }
+            set {
+                this["GridColor2"] = value;
+            }
+        }
     }
 }
