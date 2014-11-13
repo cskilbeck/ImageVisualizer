@@ -41,11 +41,15 @@
             this.originalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.alphaChannelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.maskToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.thumbnailToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.optionsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.gridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.offToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.smallToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.mediumToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.largeToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.colour1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.colour2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.zoomModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.backgroundColorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripExpando = new System.Windows.Forms.StatusStrip();
@@ -54,19 +58,12 @@
             this.selectionDetailsLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.colorStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.colorDetailStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.thumbnailToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.offToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.leftToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.rightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.topToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.bottomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.offToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.colour1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.colour2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.thumbnailPanel = new ImageVisualizer.BasicPicturePanel();
+            this.mainPanel = new System.Windows.Forms.Panel();
+            this.thumbnailWindow1 = new ImageVisualizer.ThumbnailWindow();
             this.picturePanel1 = new ImageVisualizer.PicturePanel();
             this.menuStrip2.SuspendLayout();
             this.toolStripExpando.SuspendLayout();
+            this.mainPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip2
@@ -78,8 +75,8 @@
             this.optionsToolStripMenuItem1});
             this.menuStrip2.Location = new System.Drawing.Point(0, 0);
             this.menuStrip2.Name = "menuStrip2";
-            this.menuStrip2.Size = new System.Drawing.Size(765, 24);
-            this.menuStrip2.TabIndex = 1;
+            this.menuStrip2.Size = new System.Drawing.Size(593, 24);
+            this.menuStrip2.TabIndex = 9;
             this.menuStrip2.Text = "menuStrip2";
             // 
             // optionsToolStripMenuItem
@@ -177,6 +174,13 @@
             this.maskToolStripMenuItem.Text = "&Mask";
             this.maskToolStripMenuItem.Click += new System.EventHandler(this.maskToolStripMenuItem_Click);
             // 
+            // thumbnailToolStripMenuItem
+            // 
+            this.thumbnailToolStripMenuItem.Name = "thumbnailToolStripMenuItem";
+            this.thumbnailToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.thumbnailToolStripMenuItem.Text = "&Thumbnail";
+            this.thumbnailToolStripMenuItem.Click += new System.EventHandler(this.thumbnailToolStripMenuItem_Click);
+            // 
             // optionsToolStripMenuItem1
             // 
             this.optionsToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -200,10 +204,19 @@
             this.gridToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.gridToolStripMenuItem.Text = "&Grid";
             // 
+            // offToolStripMenuItem1
+            // 
+            this.offToolStripMenuItem1.CheckOnClick = true;
+            this.offToolStripMenuItem1.Name = "offToolStripMenuItem1";
+            this.offToolStripMenuItem1.Size = new System.Drawing.Size(119, 22);
+            this.offToolStripMenuItem1.Tag = "0";
+            this.offToolStripMenuItem1.Text = "None";
+            this.offToolStripMenuItem1.Click += new System.EventHandler(this.gridSizeToolStripMenuItem_Click);
+            // 
             // smallToolStripMenuItem1
             // 
             this.smallToolStripMenuItem1.Name = "smallToolStripMenuItem1";
-            this.smallToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.smallToolStripMenuItem1.Size = new System.Drawing.Size(119, 22);
             this.smallToolStripMenuItem1.Tag = "4";
             this.smallToolStripMenuItem1.Text = "&Small";
             this.smallToolStripMenuItem1.Click += new System.EventHandler(this.gridSizeToolStripMenuItem_Click);
@@ -211,7 +224,7 @@
             // mediumToolStripMenuItem1
             // 
             this.mediumToolStripMenuItem1.Name = "mediumToolStripMenuItem1";
-            this.mediumToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.mediumToolStripMenuItem1.Size = new System.Drawing.Size(119, 22);
             this.mediumToolStripMenuItem1.Tag = "16";
             this.mediumToolStripMenuItem1.Text = "&Medium";
             this.mediumToolStripMenuItem1.Click += new System.EventHandler(this.gridSizeToolStripMenuItem_Click);
@@ -219,10 +232,24 @@
             // largeToolStripMenuItem1
             // 
             this.largeToolStripMenuItem1.Name = "largeToolStripMenuItem1";
-            this.largeToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.largeToolStripMenuItem1.Size = new System.Drawing.Size(119, 22);
             this.largeToolStripMenuItem1.Tag = "64";
             this.largeToolStripMenuItem1.Text = "&Large";
             this.largeToolStripMenuItem1.Click += new System.EventHandler(this.gridSizeToolStripMenuItem_Click);
+            // 
+            // colour1ToolStripMenuItem
+            // 
+            this.colour1ToolStripMenuItem.Name = "colour1ToolStripMenuItem";
+            this.colour1ToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.colour1ToolStripMenuItem.Text = "Colour 1";
+            this.colour1ToolStripMenuItem.Click += new System.EventHandler(this.colour1ToolStripMenuItem_Click);
+            // 
+            // colour2ToolStripMenuItem
+            // 
+            this.colour2ToolStripMenuItem.Name = "colour2ToolStripMenuItem";
+            this.colour2ToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.colour2ToolStripMenuItem.Text = "Colour 2";
+            this.colour2ToolStripMenuItem.Click += new System.EventHandler(this.colour2ToolStripMenuItem_Click);
             // 
             // zoomModeToolStripMenuItem
             // 
@@ -245,10 +272,10 @@
             this.selectionDetailsLabel,
             this.colorStatusLabel,
             this.colorDetailStatusLabel});
-            this.toolStripExpando.Location = new System.Drawing.Point(0, 642);
+            this.toolStripExpando.Location = new System.Drawing.Point(0, 549);
             this.toolStripExpando.Name = "toolStripExpando";
-            this.toolStripExpando.Size = new System.Drawing.Size(765, 22);
-            this.toolStripExpando.TabIndex = 3;
+            this.toolStripExpando.Size = new System.Drawing.Size(593, 22);
+            this.toolStripExpando.TabIndex = 10;
             this.toolStripExpando.Text = "statusStrip1";
             // 
             // detailsLabel
@@ -287,92 +314,30 @@
             this.colorDetailStatusLabel.Name = "colorDetailStatusLabel";
             this.colorDetailStatusLabel.Size = new System.Drawing.Size(118, 17);
             // 
-            // thumbnailToolStripMenuItem
+            // mainPanel
             // 
-            this.thumbnailToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.offToolStripMenuItem,
-            this.leftToolStripMenuItem,
-            this.rightToolStripMenuItem,
-            this.topToolStripMenuItem,
-            this.bottomToolStripMenuItem});
-            this.thumbnailToolStripMenuItem.Name = "thumbnailToolStripMenuItem";
-            this.thumbnailToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
-            this.thumbnailToolStripMenuItem.Text = "&Thumbnail";
+            this.mainPanel.BackColor = System.Drawing.Color.Transparent;
+            this.mainPanel.Controls.Add(this.thumbnailWindow1);
+            this.mainPanel.Controls.Add(this.picturePanel1);
+            this.mainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mainPanel.Location = new System.Drawing.Point(0, 24);
+            this.mainPanel.Name = "mainPanel";
+            this.mainPanel.Size = new System.Drawing.Size(593, 525);
+            this.mainPanel.TabIndex = 11;
+            this.mainPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.mainPanel_Paint);
             // 
-            // offToolStripMenuItem
+            // thumbnailWindow1
             // 
-            this.offToolStripMenuItem.Name = "offToolStripMenuItem";
-            this.offToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
-            this.offToolStripMenuItem.Text = "&Off";
-            this.offToolStripMenuItem.Click += new System.EventHandler(this.offToolStripMenuItem_Click);
-            // 
-            // leftToolStripMenuItem
-            // 
-            this.leftToolStripMenuItem.Name = "leftToolStripMenuItem";
-            this.leftToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
-            this.leftToolStripMenuItem.Text = "&Left";
-            this.leftToolStripMenuItem.Click += new System.EventHandler(this.leftToolStripMenuItem_Click);
-            // 
-            // rightToolStripMenuItem
-            // 
-            this.rightToolStripMenuItem.Name = "rightToolStripMenuItem";
-            this.rightToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
-            this.rightToolStripMenuItem.Text = "&Right";
-            this.rightToolStripMenuItem.Click += new System.EventHandler(this.rightToolStripMenuItem_Click);
-            // 
-            // topToolStripMenuItem
-            // 
-            this.topToolStripMenuItem.Name = "topToolStripMenuItem";
-            this.topToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
-            this.topToolStripMenuItem.Text = "&Top";
-            this.topToolStripMenuItem.Click += new System.EventHandler(this.topToolStripMenuItem_Click);
-            // 
-            // bottomToolStripMenuItem
-            // 
-            this.bottomToolStripMenuItem.Name = "bottomToolStripMenuItem";
-            this.bottomToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
-            this.bottomToolStripMenuItem.Text = "&Bottom";
-            this.bottomToolStripMenuItem.Click += new System.EventHandler(this.bottomToolStripMenuItem_Click);
-            // 
-            // offToolStripMenuItem1
-            // 
-            this.offToolStripMenuItem1.CheckOnClick = true;
-            this.offToolStripMenuItem1.Name = "offToolStripMenuItem1";
-            this.offToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
-            this.offToolStripMenuItem1.Tag = "0";
-            this.offToolStripMenuItem1.Text = "None";
-            this.offToolStripMenuItem1.Click += new System.EventHandler(this.gridSizeToolStripMenuItem_Click);
-            // 
-            // colour1ToolStripMenuItem
-            // 
-            this.colour1ToolStripMenuItem.Name = "colour1ToolStripMenuItem";
-            this.colour1ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.colour1ToolStripMenuItem.Text = "Colour 1";
-            this.colour1ToolStripMenuItem.Click += new System.EventHandler(this.colour1ToolStripMenuItem_Click);
-            // 
-            // colour2ToolStripMenuItem
-            // 
-            this.colour2ToolStripMenuItem.Name = "colour2ToolStripMenuItem";
-            this.colour2ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.colour2ToolStripMenuItem.Text = "Colour 2";
-            this.colour2ToolStripMenuItem.Click += new System.EventHandler(this.colour2ToolStripMenuItem_Click);
-            // 
-            // thumbnailPanel
-            // 
-            this.thumbnailPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.thumbnailPanel.AutoValidate = System.Windows.Forms.AutoValidate.Disable;
-            this.thumbnailPanel.BackColor = System.Drawing.Color.BlueViolet;
-            this.thumbnailPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.thumbnailPanel.Image = null;
-            this.thumbnailPanel.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-            this.thumbnailPanel.Location = new System.Drawing.Point(604, 24);
-            this.thumbnailPanel.Name = "thumbnailPanel";
-            this.thumbnailPanel.SelectionRectangle = new System.Drawing.Rectangle(0, 0, 0, 0);
-            this.thumbnailPanel.Size = new System.Drawing.Size(161, 161);
-            this.thumbnailPanel.TabIndex = 5;
-            this.thumbnailPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.basicPicturePanel1_MouseDown);
-            this.thumbnailPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.basicPicturePanel1_MouseMove);
-            this.thumbnailPanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.basicPicturePanel1_MouseUp);
+            this.thumbnailWindow1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.thumbnailWindow1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.thumbnailWindow1.ContainerParent = this.picturePanel1;
+            this.thumbnailWindow1.Location = new System.Drawing.Point(465, 0);
+            this.thumbnailWindow1.Name = "thumbnailWindow1";
+            this.thumbnailWindow1.Size = new System.Drawing.Size(128, 143);
+            this.thumbnailWindow1.TabIndex = 10;
+            this.thumbnailWindow1.ThumbnailMouseDown += new ImageVisualizer.ThumbnailWindow.ThumbnailMouseDownCallback(this.basicPicturePanel1_MouseDown);
+            this.thumbnailWindow1.ThumbnailMouseMove += new ImageVisualizer.ThumbnailWindow.ThumbnailMouseMoveCallback(this.basicPicturePanel1_MouseMove);
+            this.thumbnailWindow1.ThumbnailMouseUp += new ImageVisualizer.ThumbnailWindow.ThumbnailMouseUpCallback(this.basicPicturePanel1_MouseUp);
             // 
             // picturePanel1
             // 
@@ -381,12 +346,12 @@
             this.picturePanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.picturePanel1.Image = null;
             this.picturePanel1.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-            this.picturePanel1.Location = new System.Drawing.Point(0, 24);
+            this.picturePanel1.Location = new System.Drawing.Point(0, 0);
             this.picturePanel1.Margin = new System.Windows.Forms.Padding(0);
             this.picturePanel1.Name = "picturePanel1";
             this.picturePanel1.SelectionRectangle = new System.Drawing.Rectangle(0, 0, 0, 0);
-            this.picturePanel1.Size = new System.Drawing.Size(765, 618);
-            this.picturePanel1.TabIndex = 4;
+            this.picturePanel1.Size = new System.Drawing.Size(593, 525);
+            this.picturePanel1.TabIndex = 9;
             this.picturePanel1.Zoom = 1F;
             // 
             // ImageForm
@@ -394,11 +359,10 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.ClientSize = new System.Drawing.Size(765, 664);
-            this.Controls.Add(this.thumbnailPanel);
-            this.Controls.Add(this.picturePanel1);
-            this.Controls.Add(this.menuStrip2);
+            this.ClientSize = new System.Drawing.Size(593, 571);
+            this.Controls.Add(this.mainPanel);
             this.Controls.Add(this.toolStripExpando);
+            this.Controls.Add(this.menuStrip2);
             this.DoubleBuffered = true;
             this.KeyPreview = true;
             this.MinimizeBox = false;
@@ -411,6 +375,7 @@
             this.menuStrip2.PerformLayout();
             this.toolStripExpando.ResumeLayout(false);
             this.toolStripExpando.PerformLayout();
+            this.mainPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -420,41 +385,37 @@
 
         private System.Windows.Forms.MenuStrip menuStrip2;
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
-        private System.Windows.Forms.StatusStrip toolStripExpando;
-        private System.Windows.Forms.ToolStripStatusLabel detailsLabel;
-        private System.Windows.Forms.ToolStripStatusLabel mousePositionLabel;
-        private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem selectExtentToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem resetZoomToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem originalToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem alphaChannelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem maskToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem gridToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem offToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem smallToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem mediumToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem largeToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem colour1ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem colour2ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem zoomModeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem backgroundColorToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.StatusStrip toolStripExpando;
+        private System.Windows.Forms.ToolStripStatusLabel detailsLabel;
+        private System.Windows.Forms.ToolStripStatusLabel mousePositionLabel;
         private System.Windows.Forms.ToolStripStatusLabel selectionDetailsLabel;
         private System.Windows.Forms.ToolStripStatusLabel colorStatusLabel;
         private System.Windows.Forms.ToolStripStatusLabel colorDetailStatusLabel;
-        private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem alphaChannelToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem maskToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem originalToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem selectExtentToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem resetZoomToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
-        private BasicPicturePanel thumbnailPanel;
-        private PicturePanel picturePanel1;
         private System.Windows.Forms.ToolStripMenuItem thumbnailToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem offToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem leftToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem rightToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem topToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem bottomToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem offToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem colour1ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem colour2ToolStripMenuItem;
+        private System.Windows.Forms.Panel mainPanel;
+        private PicturePanel picturePanel1;
+        private ThumbnailWindow thumbnailWindow1;
 
 
 

@@ -61,10 +61,21 @@
       <DependentUpon>PicturePanel.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="ThumbnailWindow.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ThumbnailWindow.Designer.cs">
+      <DependentUpon>ThumbnailWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Visualizer.cs" />
   </ItemGroup>
@@ -77,6 +88,13 @@
     </EmbeddedResource>
     <EmbeddedResource Include="PicturePanel.resx">
       <DependentUpon>PicturePanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ThumbnailWindow.resx">
+      <DependentUpon>ThumbnailWindow.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

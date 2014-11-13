@@ -126,49 +126,87 @@ namespace ImageVisualizer
 
         protected override void OnPaintBackground(PaintEventArgs pevent)
         {
-            pevent.Graphics.FillRectangle(new SolidBrush(BackColor), pevent.ClipRectangle);
+            Graphics g = pevent.Graphics;
 
-            if(Image != null && gridSize > 0)
+            g.FillRectangle(new SolidBrush(BackColor), pevent.ClipRectangle);
+
+            if(Image != null)
             {
-                Graphics g = pevent.Graphics;
-
-                GraphicsState s = g.Save();
-
-                g.CompositingMode = CompositingMode.SourceCopy;
-                g.CompositingQuality = CompositingQuality.Default;
-                g.PixelOffsetMode = PixelOffsetMode.Default;
-                g.InterpolationMode = InterpolationMode.Default;
-                g.SmoothingMode = SmoothingMode.None;
-
-                RectangleF c = drawRectangle;
-                c.Offset(-1, -1);
-                g.Clip = new Region(c);
-
-                float xs = (float)Math.Floor(drawRectangle.Width / Image.Width * gridSize);
-                float ys = (float)Math.Floor(drawRectangle.Height / Image.Height * gridSize);
-                float xorg = (float)Math.Floor(drawRectangle.X);
-                float yorg = (float)Math.Floor(drawRectangle.Y);
-
-                if (xs >= 2 && ys >= 2)
+                if (gridSize > 0)
                 {
-                    int yBrush = 0;
-                    RectangleF r = new RectangleF(0, 0, xs, ys);
+                    g.CompositingMode = CompositingMode.SourceCopy;
+                    g.CompositingQuality = CompositingQuality.Default;
+                    g.PixelOffsetMode = PixelOffsetMode.Default;
+                    g.InterpolationMode = InterpolationMode.Default;
+                    g.SmoothingMode = SmoothingMode.None;
+
+                    RectangleF c = drawRectangle;
+                    c.Offset(-1, -1);
+                    g.Clip = new Region(c);
+
+                    float xs = (float)Math.Floor(drawRectangle.Width / Image.Width * gridSize);
+                    float ys = (float)Math.Floor(drawRectangle.Height / Image.Height * gridSize);
+                    float xorg = (float)Math.Floor(drawRectangle.X);
+                    float yorg = (float)Math.Floor(drawRectangle.Y);
+
+                    if (xs >= 2 && ys >= 2)
                     {
-                        for (float y = 0; y < drawRectangle.Height; y += ys)
+                        int yBrush = 0;
+                        RectangleF r = new RectangleF(0, 0, xs, ys);
                         {
-                            int xBrush = yBrush;
-                            r.Y = y + yorg;
-                            for (float x = 0; x < drawRectangle.Width; x += xs)
+                            for (float y = 0; y < drawRectangle.Height; y += ys)
                             {
-                                r.X = x + xorg;
-                                g.FillRectangle(gridBrushes[xBrush], r);
-                                xBrush = 1 - xBrush;
+                                int xBrush = yBrush;
+                                r.Y = y + yorg;
+                                for (float x = 0; x < drawRectangle.Width; x += xs)
+                                {
+                                    r.X = x + xorg;
+                                    g.FillRectangle(gridBrushes[xBrush], r);
+                                    xBrush = 1 - xBrush;
+                                }
+                                yBrush = 1 - yBrush;
                             }
-                            yBrush = 1 - yBrush;
                         }
                     }
                 }
-                g.Restore(s);
+                try
+                {
+                    g.InterpolationMode = interpolationMode;
+                }
+                catch (ArgumentException)
+                {
+                    g.InterpolationMode = InterpolationMode.Default;
+                }
+                g.CompositingQuality = CompositingQuality.HighQuality;
+                g.SmoothingMode = SmoothingMode.None;
+                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                g.CompositingMode = CompositingMode.SourceOver;
+                using (ImageAttributes a = new ImageAttributes())
+                {
+                    PointF[] p = {
+                                    new PointF((float)Math.Floor(drawRectangle.X), (float)Math.Floor(drawRectangle.Y)),
+                                    new PointF((float)Math.Floor(drawRectangle.Right), (float)Math.Floor(drawRectangle.Top)),
+                                    new PointF((float)Math.Floor(drawRectangle.Left), (float)Math.Floor(drawRectangle.Bottom))
+                                };
+                    a.SetWrapMode(WrapMode.TileFlipXY);
+                    g.DrawImage(image, p, new RectangleF(0, 0, Image.Width, Image.Height), GraphicsUnit.Pixel, a);
+                }
+                if (!selectionRectangle.IsEmpty)
+                {
+                    float dl = drawRectangle.Left;
+                    float dt = drawRectangle.Top;
+                    float xsc = drawRectangle.Width / image.Width;
+                    float ysc = drawRectangle.Height / image.Height;
+                    float l = (float)Math.Floor(selectionRectangle.Left * xsc + dl); // Round() to defeat pixel offset mode shenanigans
+                    float r = (float)Math.Floor(selectionRectangle.Right * xsc + dl);
+                    float t = (float)Math.Floor(selectionRectangle.Top * ysc + dt);
+                    float b = (float)Math.Floor(selectionRectangle.Bottom * ysc + dt);
+                    Rectangle rs = new Rectangle((int)l, (int)t, (int)(r - l - 1), (int)(b - t - 1));
+                    g.SmoothingMode = SmoothingMode.None;
+                    g.PixelOffsetMode = PixelOffsetMode.None;
+                    g.FillRectangle(selectionBrush, rs);
+                    g.DrawRectangle(Pens.White, rs);
+                }
             }
         }
 
@@ -176,50 +214,6 @@ namespace ImageVisualizer
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            if (Image != null)
-            {
-                try
-                {
-                    e.Graphics.InterpolationMode = interpolationMode;
-                }
-                catch(ArgumentException)
-                {
-                    e.Graphics.InterpolationMode = InterpolationMode.Default;
-                }
-                e.Graphics.CompositingQuality = CompositingQuality.HighQuality;
-                e.Graphics.SmoothingMode = SmoothingMode.None;
-                e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-                e.Graphics.CompositingMode = CompositingMode.SourceOver;
-                using (ImageAttributes a = new ImageAttributes())
-                {
-                    PointF[] p = {
-                                     new PointF((float)Math.Floor(drawRectangle.X), (float)Math.Floor(drawRectangle.Y)),
-                                     new PointF((float)Math.Floor(drawRectangle.Right), (float)Math.Floor(drawRectangle.Top)),
-                                     new PointF((float)Math.Floor(drawRectangle.Left), (float)Math.Floor(drawRectangle.Bottom))
-                                 };
-                    a.SetWrapMode(WrapMode.TileFlipXY);
-                    e.Graphics.DrawImage(image, p, new RectangleF(0, 0, Image.Width, Image.Height), GraphicsUnit.Pixel, a);
-                }
-                if(!selectionRectangle.IsEmpty)
-                {
-                    float dl = drawRectangle.Left;
-                    float dt = drawRectangle.Top;
-                    float xs = drawRectangle.Width / image.Width;
-                    float ys = drawRectangle.Height / image.Height;
-                    float l = (float)Math.Floor(selectionRectangle.Left * xs + dl); // Round() to defeat pixel offset mode shenanigans
-                    float r = (float)Math.Floor(selectionRectangle.Right * xs + dl);
-                    float t = (float)Math.Floor(selectionRectangle.Top * ys + dt);
-                    float b = (float)Math.Floor(selectionRectangle.Bottom * ys + dt);
-                    //if(l > 1 || r < Width || t > 1 || b < Height)
-                    {
-                        Rectangle s = new Rectangle((int)l, (int)t, (int)(r - l - 1), (int)(b - t - 1));
-                        e.Graphics.SmoothingMode = SmoothingMode.None;
-                        e.Graphics.PixelOffsetMode = PixelOffsetMode.None;
-                        e.Graphics.FillRectangle(selectionBrush, s);
-                        e.Graphics.DrawRectangle(Pens.White, s);
-                    }
-                }
-            }
         }
     }
 }

@@ -18,22 +18,23 @@ namespace ImageVisualizer
 
     public partial class ImageForm : Form
     {
-        ToolStripMenuItem currentInterpolationModeMenuItem;
-        ToolStripMenuItem currentGridSizeMenuItem;
-        bool dragSelection;
-        int gridSize;
-        Image originalImage;
-        Image sourceImage;
-        Color pixelColor = Color.Transparent;
-        bool showPixelColor;
-        bool thumbnailVisible;
-        int thumbnailAlign;
-        Color[] gridColors = { Color.LightGray, Color.DarkGray };
+        ToolStripMenuItem   currentInterpolationModeMenuItem;
+        ToolStripMenuItem   currentGridSizeMenuItem;
+        bool                dragSelection;
+        int                 gridSize;
+        Image               originalImage;
+        Image               sourceImage;
+        Color               pixelColor = Color.Transparent;
+        bool                showPixelColor;
+        bool                thumbnailVisible;
+        int                 thumbnailAlign;
+        Color[]             gridColors = { Color.LightGray, Color.DarkGray };
+        BasicPicturePanel   thumbnailPanel;
 
         enum ThumbnailAlign : int
         {
-            Horizontal = 1,      // Left = 0, Right = 1
-            Vertical = 2       // Top = 0, Bottom = 1
+            Horizontal = 1,     // Left = 0, Right = 1
+            Vertical = 2        // Top = 0, Bottom = 1
         }
 
         //////////////////////////////////////////////////////////////////////
@@ -41,10 +42,10 @@ namespace ImageVisualizer
         public ImageForm(Image image)
         {
             InitializeComponent();
+            thumbnailPanel = thumbnailWindow1.PicturePanel;
 
             LoadSettings();
 
-            SetupThumbnail();
             originalImage = image;
             sourceImage = image;
             StartPosition = FormStartPosition.Manual;
@@ -126,7 +127,6 @@ namespace ImageVisualizer
                 currentInterpolationModeMenuItem = m;
                 picturePanel1.InterpolationMode = (InterpolationMode)m.Tag;
                 thumbnailPanel.InterpolationMode = (InterpolationMode)m.Tag;
-                // !?
             }
         }
 
@@ -388,8 +388,6 @@ namespace ImageVisualizer
 
         private void colorStatusLabel_Paint(object sender, PaintEventArgs e)
         {
-            // draw alpha as black to white
-            // the rest as black to color
             if(showPixelColor)
             {
                 Graphics gr = e.Graphics;
@@ -543,87 +541,6 @@ namespace ImageVisualizer
 
         //////////////////////////////////////////////////////////////////////
 
-        void SetupThumbnail()
-        {
-            int x = 0;
-            int y = picturePanel1.Top;
-            AnchorStyles anchor = AnchorStyles.Left | AnchorStyles.Top;
-            bool leftCheck = true;
-            bool rightCheck = false;
-            bool topCheck = true;
-            bool bottomCheck = false;
-            offToolStripMenuItem.Text = thumbnailVisible ? "&Off" : "&On";
-            thumbnailPanel.Visible = thumbnailVisible;
-            if ((thumbnailAlign & (int)ThumbnailAlign.Horizontal) != 0)
-            {
-                x = Width - thumbnailPanel.Width;
-                anchor |= AnchorStyles.Right;
-                anchor &= ~AnchorStyles.Left;
-                leftCheck = false;
-                rightCheck = true;
-            }
-            if ((thumbnailAlign & (int)ThumbnailAlign.Vertical) != 0)
-            {
-                y = toolStripExpando.Top - thumbnailPanel.Height;
-                anchor |= AnchorStyles.Bottom;
-                anchor &= ~AnchorStyles.Top;
-                topCheck = false;
-                bottomCheck = true;
-            }
-            leftToolStripMenuItem.Checked = leftCheck;
-            rightToolStripMenuItem.Checked = rightCheck;
-            topToolStripMenuItem.Checked = topCheck;
-            bottomToolStripMenuItem.Checked = bottomCheck;
-            thumbnailPanel.Location = new Point(x, y);
-            thumbnailPanel.Anchor = anchor;
-            leftToolStripMenuItem.Enabled = thumbnailVisible;
-            rightToolStripMenuItem.Enabled = thumbnailVisible;
-            topToolStripMenuItem.Enabled = thumbnailVisible;
-            bottomToolStripMenuItem.Enabled = thumbnailVisible;
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
-        private void offToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            thumbnailVisible = !thumbnailVisible;
-            SetupThumbnail();
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
-        private void leftToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            thumbnailAlign &= ~1;
-            SetupThumbnail();
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
-        private void rightToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            thumbnailAlign |= 1;
-            SetupThumbnail();
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
-        private void topToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            thumbnailAlign &= ~2;
-            SetupThumbnail();
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
-        private void bottomToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            thumbnailAlign |= 2;
-            SetupThumbnail();
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
         private void colour1ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ChooseColor(out gridColors[0]);
@@ -636,6 +553,23 @@ namespace ImageVisualizer
         {
             ChooseColor(out gridColors[1]);
             picturePanel1.SetGridColors(gridColors);
+        }
+
+        private void thumbnailToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            thumbnailPanel.Visible = true;
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        private void mainPanel_Paint(object sender, PaintEventArgs e)
+        {
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        protected override void OnPaintBackground(PaintEventArgs pevent)
+        {
         }
 
         //////////////////////////////////////////////////////////////////////
