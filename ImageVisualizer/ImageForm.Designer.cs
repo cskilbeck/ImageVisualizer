@@ -75,7 +75,7 @@
             this.optionsToolStripMenuItem1});
             this.menuStrip2.Location = new System.Drawing.Point(0, 0);
             this.menuStrip2.Name = "menuStrip2";
-            this.menuStrip2.Size = new System.Drawing.Size(593, 24);
+            this.menuStrip2.Size = new System.Drawing.Size(660, 24);
             this.menuStrip2.TabIndex = 9;
             this.menuStrip2.Text = "menuStrip2";
             // 
@@ -144,40 +144,42 @@
             // resetZoomToolStripMenuItem
             // 
             this.resetZoomToolStripMenuItem.Name = "resetZoomToolStripMenuItem";
-            this.resetZoomToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.resetZoomToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.resetZoomToolStripMenuItem.Text = "&Reset zoom";
             this.resetZoomToolStripMenuItem.Click += new System.EventHandler(this.resetZoomToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(147, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(149, 6);
             // 
             // originalToolStripMenuItem
             // 
             this.originalToolStripMenuItem.Name = "originalToolStripMenuItem";
-            this.originalToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.originalToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.originalToolStripMenuItem.Text = "&Original";
             this.originalToolStripMenuItem.Click += new System.EventHandler(this.originalToolStripMenuItem_Click);
             // 
             // alphaChannelToolStripMenuItem
             // 
             this.alphaChannelToolStripMenuItem.Name = "alphaChannelToolStripMenuItem";
-            this.alphaChannelToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.alphaChannelToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.alphaChannelToolStripMenuItem.Text = "&Alpha channel";
             this.alphaChannelToolStripMenuItem.Click += new System.EventHandler(this.alphaChannelToolStripMenuItem_Click);
             // 
             // maskToolStripMenuItem
             // 
             this.maskToolStripMenuItem.Name = "maskToolStripMenuItem";
-            this.maskToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.maskToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.maskToolStripMenuItem.Text = "&Mask";
             this.maskToolStripMenuItem.Click += new System.EventHandler(this.maskToolStripMenuItem_Click);
             // 
             // thumbnailToolStripMenuItem
             // 
+            this.thumbnailToolStripMenuItem.Checked = true;
+            this.thumbnailToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.thumbnailToolStripMenuItem.Name = "thumbnailToolStripMenuItem";
-            this.thumbnailToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.thumbnailToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.thumbnailToolStripMenuItem.Text = "&Thumbnail";
             this.thumbnailToolStripMenuItem.Click += new System.EventHandler(this.thumbnailToolStripMenuItem_Click);
             // 
@@ -272,9 +274,9 @@
             this.selectionDetailsLabel,
             this.colorStatusLabel,
             this.colorDetailStatusLabel});
-            this.toolStripExpando.Location = new System.Drawing.Point(0, 549);
+            this.toolStripExpando.Location = new System.Drawing.Point(0, 560);
             this.toolStripExpando.Name = "toolStripExpando";
-            this.toolStripExpando.Size = new System.Drawing.Size(593, 22);
+            this.toolStripExpando.Size = new System.Drawing.Size(660, 22);
             this.toolStripExpando.TabIndex = 10;
             this.toolStripExpando.Text = "statusStrip1";
             // 
@@ -322,7 +324,7 @@
             this.mainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainPanel.Location = new System.Drawing.Point(0, 24);
             this.mainPanel.Name = "mainPanel";
-            this.mainPanel.Size = new System.Drawing.Size(593, 525);
+            this.mainPanel.Size = new System.Drawing.Size(660, 536);
             this.mainPanel.TabIndex = 11;
             this.mainPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.mainPanel_Paint);
             // 
@@ -331,13 +333,14 @@
             this.thumbnailWindow1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.thumbnailWindow1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.thumbnailWindow1.ContainerParent = this.picturePanel1;
-            this.thumbnailWindow1.Location = new System.Drawing.Point(465, 0);
+            this.thumbnailWindow1.Location = new System.Drawing.Point(532, 0);
             this.thumbnailWindow1.Name = "thumbnailWindow1";
             this.thumbnailWindow1.Size = new System.Drawing.Size(128, 143);
             this.thumbnailWindow1.TabIndex = 10;
             this.thumbnailWindow1.ThumbnailMouseDown += new ImageVisualizer.ThumbnailWindow.ThumbnailMouseDownCallback(this.basicPicturePanel1_MouseDown);
             this.thumbnailWindow1.ThumbnailMouseMove += new ImageVisualizer.ThumbnailWindow.ThumbnailMouseMoveCallback(this.basicPicturePanel1_MouseMove);
             this.thumbnailWindow1.ThumbnailMouseUp += new ImageVisualizer.ThumbnailWindow.ThumbnailMouseUpCallback(this.basicPicturePanel1_MouseUp);
+            this.thumbnailWindow1.VisibleChanged += new System.EventHandler(this.thumbnailWindow1_VisibleChanged);
             // 
             // picturePanel1
             // 
@@ -350,7 +353,7 @@
             this.picturePanel1.Margin = new System.Windows.Forms.Padding(0);
             this.picturePanel1.Name = "picturePanel1";
             this.picturePanel1.SelectionRectangle = new System.Drawing.Rectangle(0, 0, 0, 0);
-            this.picturePanel1.Size = new System.Drawing.Size(593, 525);
+            this.picturePanel1.Size = new System.Drawing.Size(660, 536);
             this.picturePanel1.TabIndex = 9;
             this.picturePanel1.Zoom = 1F;
             // 
@@ -359,7 +362,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.ClientSize = new System.Drawing.Size(593, 571);
+            this.ClientSize = new System.Drawing.Size(660, 582);
             this.Controls.Add(this.mainPanel);
             this.Controls.Add(this.toolStripExpando);
             this.Controls.Add(this.menuStrip2);

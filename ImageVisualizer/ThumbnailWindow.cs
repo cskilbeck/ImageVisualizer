@@ -52,30 +52,29 @@ namespace ImageVisualizer
         {
             int x = pos.X;
             int y = pos.Y;
-            AnchorStyles a = AnchorStyles.None;
+            AnchorStyles h = AnchorStyles.Left;
+            AnchorStyles v = AnchorStyles.Top;
             if (x <= parent.Left)
             {
                 x = parent.Left;
-                a |= AnchorStyles.Left;
             }
             else if (x >= parent.Right - Width)
             {
                 x = parent.Right - Width;
-                a |= AnchorStyles.Right;
+                h = AnchorStyles.Right;
             }
             if (y <= parent.Top)
             {
                 y = parent.Top;
-                a |= AnchorStyles.Top;
             }
             else if (y >= parent.Bottom - Height)
             {
                 y = parent.Bottom - Height;
-                a |= AnchorStyles.Bottom;
+                v = AnchorStyles.Bottom;
             }
             if (setAnchor)
             {
-                Anchor = a;
+                Anchor = h | v;
             }
             Location = new Point(x, y);
         }

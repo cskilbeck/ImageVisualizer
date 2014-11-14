@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Drawing.Imaging;
+using System.IO;
 
 //////////////////////////////////////////////////////////////////////
 
@@ -30,6 +31,7 @@ namespace ImageVisualizer
         int                 thumbnailAlign;
         Color[]             gridColors = { Color.LightGray, Color.DarkGray };
         BasicPicturePanel   thumbnailPanel;
+        MySettings          settings;
 
         enum ThumbnailAlign : int
         {
@@ -49,8 +51,8 @@ namespace ImageVisualizer
             originalImage = image;
             sourceImage = image;
             StartPosition = FormStartPosition.Manual;
-            var mousePos = Cursor.Position;
-            Location = new Point(mousePos.X - this.Width / 2, Math.Max(0, mousePos.Y - this.Height / 2));
+            Size ms = SystemInformation.PrimaryMonitorSize;
+            Location = new Point((ms.Width - Width) / 2, (ms.Height - Height) / 2);
             string fmt = sourceImage.PixelFormat.ToString().Replace("Format", "");
             detailsLabel.Text = String.Format("{0}x{1},{2}", sourceImage.Width, sourceImage.Height, fmt);
             this.ShowInTaskbar = true;
@@ -291,14 +293,13 @@ namespace ImageVisualizer
 
         //////////////////////////////////////////////////////////////////////
 
-        private bool ChooseColor(out Color color)
+        private bool ChooseColor(ref Color color)
         {
-            color = Color.Transparent;
             ColorDialog c = new ColorDialog();
             c.AllowFullOpen = true;
             c.FullOpen = true;
             c.SolidColorOnly = true;
-            c.Color = picturePanel1.BackColor;
+            c.Color = color;
             if (c.ShowDialog() == DialogResult.OK)
             {
                 color = c.Color;
@@ -311,10 +312,11 @@ namespace ImageVisualizer
 
         private void backgroundToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Color c;
-            if (ChooseColor(out c))
+            Color c = picturePanel1.BackColor;
+            if(ChooseColor(ref c))
             {
                 picturePanel1.BackColor = c;
+                thumbnailPanel.BackColor = c;
             }
         }
 
@@ -344,30 +346,47 @@ namespace ImageVisualizer
 
         //////////////////////////////////////////////////////////////////////
 
+        string SettingsFilename()
+        {
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ImageVisualizer.json");
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
         void LoadSettings()
         {
-            thumbnailVisible = Properties.Settings.Default.Thumbnail;
-            thumbnailAlign = Properties.Settings.Default.ThumbnailAlign;
-            gridSize = Properties.Settings.Default.GridSize;
-            picturePanel1.BackColor = Properties.Settings.Default.BackgroundColour;
-            thumbnailPanel.BackColor = Properties.Settings.Default.BackgroundColour;
-            picturePanel1.InterpolationMode = Properties.Settings.Default.ZoomMode;
-            gridColors[0] = Properties.Settings.Default.GridColor1;
-            gridColors[1] = Properties.Settings.Default.GridColor2;
+            MySettings s = Settings.Load<MySettings>(SettingsFilename());
+
+            thumbnailVisible                = s.Thumbnail != 0;
+            thumbnailAlign                  = s.ThumbnailAlign;
+            gridSize                        = s.GridSize;
+            picturePanel1.BackColor         = Color.FromArgb(s.BackgroundColour);
+            thumbnailPanel.BackColor        = Color.FromArgb(s.BackgroundColour);
+            picturePanel1.InterpolationMode = (InterpolationMode)s.ZoomMode;
+            gridColors[0]                   = Color.FromArgb(s.GridColor1);
+            gridColors[1]                   = Color.FromArgb(s.GridColor2);
+
+            picturePanel1.SetGridColors(gridColors);
+            thumbnailWindow1.Visible = thumbnailVisible;
+            thumbnailToolStripMenuItem.Checked = thumbnailVisible;
         }
 
         //////////////////////////////////////////////////////////////////////
 
         void SaveSettings()
         {
-            Properties.Settings.Default.ZoomMode = picturePanel1.InterpolationMode;
-            Properties.Settings.Default.GridSize = gridSize;
-            Properties.Settings.Default.BackgroundColour = picturePanel1.BackColor;
-            Properties.Settings.Default.Thumbnail = thumbnailVisible;
-            Properties.Settings.Default.ThumbnailAlign = thumbnailAlign;
-            Properties.Settings.Default.GridColor1 = gridColors[0];
-            Properties.Settings.Default.GridColor2 = gridColors[1];
-            Properties.Settings.Default.Save();
+            var s = new MySettings();
+
+            s.ZoomMode            = (int)picturePanel1.InterpolationMode;
+            s.GridSize            = gridSize;
+            s.BackgroundColour    = picturePanel1.BackColor.ToArgb();
+            s.Thumbnail           = thumbnailVisible ? 1 : 0;
+            s.ThumbnailAlign      = thumbnailAlign;
+            s.GridColor1          = gridColors[0].ToArgb();
+            s.GridColor2          = gridColors[1].ToArgb();
+
+            Settings.Save<MySettings>(s, SettingsFilename());
+
         }
 
         //////////////////////////////////////////////////////////////////////
@@ -543,7 +562,7 @@ namespace ImageVisualizer
 
         private void colour1ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ChooseColor(out gridColors[0]);
+            ChooseColor(ref gridColors[0]);
             picturePanel1.SetGridColors(gridColors);
         }
 
@@ -551,13 +570,17 @@ namespace ImageVisualizer
 
         private void colour2ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ChooseColor(out gridColors[1]);
+            ChooseColor(ref gridColors[1]);
             picturePanel1.SetGridColors(gridColors);
         }
 
+        //////////////////////////////////////////////////////////////////////
+
         private void thumbnailToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            thumbnailPanel.Visible = true;
+            thumbnailVisible = !thumbnailVisible;
+            thumbnailWindow1.Visible = thumbnailVisible;
+            thumbnailToolStripMenuItem.Checked = thumbnailVisible;
         }
 
         //////////////////////////////////////////////////////////////////////
@@ -570,6 +593,14 @@ namespace ImageVisualizer
 
         protected override void OnPaintBackground(PaintEventArgs pevent)
         {
+        }
+
+        //////////////////////////////////////////////////////////////////////
+
+        private void thumbnailWindow1_VisibleChanged(object sender, EventArgs e)
+        {
+            thumbnailVisible = thumbnailWindow1.Visible;
+            thumbnailToolStripMenuItem.Checked = thumbnailVisible;
         }
 
         //////////////////////////////////////////////////////////////////////
