@@ -39,8 +39,12 @@
             this.resetZoomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.originalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.alphaChannelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.maskToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.channelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.alphaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.redToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.greebToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.blueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.thumbnailToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.optionsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.gridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -134,8 +138,8 @@
             this.resetZoomToolStripMenuItem,
             this.toolStripMenuItem1,
             this.originalToolStripMenuItem,
-            this.alphaChannelToolStripMenuItem,
             this.maskToolStripMenuItem,
+            this.channelToolStripMenuItem,
             this.thumbnailToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
@@ -160,19 +164,55 @@
             this.originalToolStripMenuItem.Text = "&Original";
             this.originalToolStripMenuItem.Click += new System.EventHandler(this.originalToolStripMenuItem_Click);
             // 
-            // alphaChannelToolStripMenuItem
-            // 
-            this.alphaChannelToolStripMenuItem.Name = "alphaChannelToolStripMenuItem";
-            this.alphaChannelToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.alphaChannelToolStripMenuItem.Text = "&Alpha channel";
-            this.alphaChannelToolStripMenuItem.Click += new System.EventHandler(this.alphaChannelToolStripMenuItem_Click);
-            // 
             // maskToolStripMenuItem
             // 
             this.maskToolStripMenuItem.Name = "maskToolStripMenuItem";
             this.maskToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.maskToolStripMenuItem.Text = "&Mask";
             this.maskToolStripMenuItem.Click += new System.EventHandler(this.maskToolStripMenuItem_Click);
+            // 
+            // channelToolStripMenuItem
+            // 
+            this.channelToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.alphaToolStripMenuItem,
+            this.redToolStripMenuItem,
+            this.greebToolStripMenuItem,
+            this.blueToolStripMenuItem});
+            this.channelToolStripMenuItem.Name = "channelToolStripMenuItem";
+            this.channelToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.channelToolStripMenuItem.Text = "Channel";
+            // 
+            // alphaToolStripMenuItem
+            // 
+            this.alphaToolStripMenuItem.Name = "alphaToolStripMenuItem";
+            this.alphaToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.alphaToolStripMenuItem.Tag = "3";
+            this.alphaToolStripMenuItem.Text = "Alpha";
+            this.alphaToolStripMenuItem.Click += new System.EventHandler(this.viewChannelToolStripMenuItem_Click);
+            // 
+            // redToolStripMenuItem
+            // 
+            this.redToolStripMenuItem.Name = "redToolStripMenuItem";
+            this.redToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.redToolStripMenuItem.Tag = "2";
+            this.redToolStripMenuItem.Text = "Red";
+            this.redToolStripMenuItem.Click += new System.EventHandler(this.viewChannelToolStripMenuItem_Click);
+            // 
+            // greebToolStripMenuItem
+            // 
+            this.greebToolStripMenuItem.Name = "greebToolStripMenuItem";
+            this.greebToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.greebToolStripMenuItem.Tag = "1";
+            this.greebToolStripMenuItem.Text = "Green";
+            this.greebToolStripMenuItem.Click += new System.EventHandler(this.viewChannelToolStripMenuItem_Click);
+            // 
+            // blueToolStripMenuItem
+            // 
+            this.blueToolStripMenuItem.Name = "blueToolStripMenuItem";
+            this.blueToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.blueToolStripMenuItem.Tag = "0";
+            this.blueToolStripMenuItem.Text = "Blue";
+            this.blueToolStripMenuItem.Click += new System.EventHandler(this.viewChannelToolStripMenuItem_Click);
             // 
             // thumbnailToolStripMenuItem
             // 
@@ -397,7 +437,6 @@
         private System.Windows.Forms.ToolStripMenuItem resetZoomToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem originalToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem alphaChannelToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem maskToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem gridToolStripMenuItem;
@@ -419,6 +458,11 @@
         private System.Windows.Forms.Panel mainPanel;
         private PicturePanel picturePanel1;
         private ThumbnailWindow thumbnailWindow1;
+        private System.Windows.Forms.ToolStripMenuItem channelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem alphaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem redToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem greebToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem blueToolStripMenuItem;
 
 
 

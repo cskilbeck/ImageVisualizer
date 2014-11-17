@@ -31,7 +31,6 @@ namespace ImageVisualizer
         int                 thumbnailAlign;
         Color[]             gridColors = { Color.LightGray, Color.DarkGray };
         BasicPicturePanel   thumbnailPanel;
-        MySettings          settings;
 
         enum ThumbnailAlign : int
         {
@@ -450,7 +449,6 @@ namespace ImageVisualizer
         {
             Rectangle r = new Rectangle(Point.Empty, b.Size);
             BitmapData d = b.LockBits(r, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-            IntPtr p = d.Scan0;
             int len = d.Height * d.Stride;
             byte[] pixels = new byte[len];
             Marshal.Copy(d.Scan0, pixels, 0, len);
@@ -464,7 +462,6 @@ namespace ImageVisualizer
         {
             Rectangle r = new Rectangle(Point.Empty, b.Size);
             BitmapData d = b.LockBits(r, ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
-            IntPtr p = d.Scan0;
             int len = d.Height * d.Stride;
             if(bytes.Length < len)
             {
@@ -476,21 +473,27 @@ namespace ImageVisualizer
 
         //////////////////////////////////////////////////////////////////////
 
-        private void alphaChannelToolStripMenuItem_Click(object sender, EventArgs e)
+        private void viewChannelToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Bitmap b = originalImage as Bitmap;
             if (b != null)
             {
-                byte[] pixels = GetPixels(b);
-                int len = pixels.Length;
-                for (int i = 0; i < len; i += 4)
+                object t = (sender as ToolStripMenuItem).Tag;
+                if(t != null)
                 {
-                    pixels[i + 0] = pixels[i + 1] = pixels[i + 2] = pixels[i + 3];
-                    pixels[i + 3] = 0xff;
+                    int m = Convert.ToInt32(t);
+                    byte[] pixels = GetPixels(b);
+                    int len = pixels.Length;
+                    for (int i = 0; i < len; i += 4)
+                    {
+                        byte c = pixels[i + m];
+                        pixels[i + 3] = 0xff;
+                        pixels[i + 0] = pixels[i + 1] = pixels[i + 2] = c;
+                    }
+                    Bitmap n = new Bitmap(b.Width, b.Height, PixelFormat.Format32bppArgb);
+                    SetPixels(n, pixels);
+                    picturePanel1.Image = n;
                 }
-                Bitmap n = new Bitmap(b.Width, b.Height, PixelFormat.Format32bppArgb);
-                SetPixels(n, pixels);
-                picturePanel1.Image = n;
             }
         }
 
