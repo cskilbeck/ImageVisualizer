@@ -1,5 +1,4 @@
 ﻿//////////////////////////////////////////////////////////////////////
-// Settings don't save when it's used as a VS Visualizer...
 
 using System;
 using System.Drawing;
@@ -10,6 +9,7 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Xml.Serialization;
 
 //////////////////////////////////////////////////////////////////////
 
@@ -22,21 +22,13 @@ namespace ImageVisualizer
         ToolStripMenuItem   currentInterpolationModeMenuItem;
         ToolStripMenuItem   currentGridSizeMenuItem;
         bool                dragSelection;
-        int                 gridSize;
         Image               originalImage;
         Image               sourceImage;
         Color               pixelColor = Color.Transparent;
         bool                showPixelColor;
-        bool                thumbnailVisible;
-        int                 thumbnailAlign;
         Color[]             gridColors = { Color.LightGray, Color.DarkGray };
         BasicPicturePanel   thumbnailPanel;
-
-        enum ThumbnailAlign : int
-        {
-            Horizontal = 1,     // Left = 0, Right = 1
-            Vertical = 2        // Top = 0, Bottom = 1
-        }
+        Settings            settings;
 
         //////////////////////////////////////////////////////////////////////
 
@@ -59,7 +51,7 @@ namespace ImageVisualizer
             picturePanel1.MouseLeave += picturePanel1_MouseLeave;
             picturePanel1.ViewChanged += picturePanel1_ViewChanged;
 
-            picturePanel1.gridSize = gridSize;
+            picturePanel1.gridSize = settings.GridSize;
             thumbnailPanel.gridSize = 0;
 
             // build the InterpolationMode menu
@@ -88,7 +80,7 @@ namespace ImageVisualizer
                 if(m.Tag != null)
                 {
                     int s = Convert.ToInt32(m.Tag);
-                    if (s == gridSize)
+                    if (s == settings.GridSize)
                     {
                         currentGridSizeMenuItem = m;
                         m.Checked = true;
@@ -99,8 +91,8 @@ namespace ImageVisualizer
             {
                 currentGridSizeMenuItem = mediumToolStripMenuItem1;
                 currentGridSizeMenuItem.Checked = true;
-                gridSize = Convert.ToInt32(currentGridSizeMenuItem.Tag);
-                picturePanel1.gridSize = gridSize;
+                settings.GridSize = Convert.ToInt32(currentGridSizeMenuItem.Tag);
+                picturePanel1.gridSize = settings.GridSize;
             }
             BuildImage();
         }
@@ -278,8 +270,8 @@ namespace ImageVisualizer
             }
             currentGridSizeMenuItem = m;
             currentGridSizeMenuItem.Checked = true;
-            gridSize = Convert.ToInt32(currentGridSizeMenuItem.Tag);
-            picturePanel1.gridSize = gridSize;
+            settings.GridSize = Convert.ToInt32(currentGridSizeMenuItem.Tag);
+            picturePanel1.gridSize = settings.GridSize;
             BuildImage();
         }
 
@@ -345,47 +337,39 @@ namespace ImageVisualizer
 
         //////////////////////////////////////////////////////////////////////
 
-        string SettingsFilename()
+        static string SettingsFilename
         {
-            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ImageVisualizer.json");
+            get
+            {
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ImageVisualizer.xml");
+            }
         }
 
         //////////////////////////////////////////////////////////////////////
 
         void LoadSettings()
         {
-            MySettings s = Settings.Load<MySettings>(SettingsFilename());
-
-            thumbnailVisible                = s.Thumbnail != 0;
-            thumbnailAlign                  = s.ThumbnailAlign;
-            gridSize                        = s.GridSize;
-            picturePanel1.BackColor         = Color.FromArgb(s.BackgroundColour);
-            thumbnailPanel.BackColor        = Color.FromArgb(s.BackgroundColour);
-            picturePanel1.InterpolationMode = (InterpolationMode)s.ZoomMode;
-            gridColors[0]                   = Color.FromArgb(s.GridColor1);
-            gridColors[1]                   = Color.FromArgb(s.GridColor2);
-
+            settings = Options.Load<Settings>(SettingsFilename);
+            picturePanel1.BackColor = settings.BackgroundColour;
+            thumbnailPanel.BackColor = settings.BackgroundColour;
+            picturePanel1.InterpolationMode = settings.InterpolationMode;
+            gridColors[0] = settings.GridColor1;
+            gridColors[1] = settings.GridColor2;
             picturePanel1.SetGridColors(gridColors);
-            thumbnailWindow1.Visible = thumbnailVisible;
-            thumbnailToolStripMenuItem.Checked = thumbnailVisible;
+            thumbnailWindow1.Visible = settings.ThumbnailVisible;
+            thumbnailToolStripMenuItem.Checked = settings.ThumbnailVisible;
         }
 
         //////////////////////////////////////////////////////////////////////
 
         void SaveSettings()
         {
-            var s = new MySettings();
+            settings.InterpolationMode   = picturePanel1.InterpolationMode;
+            settings.BackgroundColour    = picturePanel1.BackColor;
+            settings.GridColor1          = gridColors[0];
+            settings.GridColor2          = gridColors[1];
 
-            s.ZoomMode            = (int)picturePanel1.InterpolationMode;
-            s.GridSize            = gridSize;
-            s.BackgroundColour    = picturePanel1.BackColor.ToArgb();
-            s.Thumbnail           = thumbnailVisible ? 1 : 0;
-            s.ThumbnailAlign      = thumbnailAlign;
-            s.GridColor1          = gridColors[0].ToArgb();
-            s.GridColor2          = gridColors[1].ToArgb();
-
-            Settings.Save<MySettings>(s, SettingsFilename());
-
+            Options.Save(settings, SettingsFilename);
         }
 
         //////////////////////////////////////////////////////////////////////
@@ -581,31 +565,46 @@ namespace ImageVisualizer
 
         private void thumbnailToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            thumbnailVisible = !thumbnailVisible;
-            thumbnailWindow1.Visible = thumbnailVisible;
-            thumbnailToolStripMenuItem.Checked = thumbnailVisible;
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
-        private void mainPanel_Paint(object sender, PaintEventArgs e)
-        {
-        }
-
-        //////////////////////////////////////////////////////////////////////
-
-        protected override void OnPaintBackground(PaintEventArgs pevent)
-        {
+            settings.ThumbnailVisible = !settings.ThumbnailVisible;
+            thumbnailWindow1.Visible = settings.ThumbnailVisible;
+            thumbnailToolStripMenuItem.Checked = settings.ThumbnailVisible;
         }
 
         //////////////////////////////////////////////////////////////////////
 
         private void thumbnailWindow1_VisibleChanged(object sender, EventArgs e)
         {
-            thumbnailVisible = thumbnailWindow1.Visible;
-            thumbnailToolStripMenuItem.Checked = thumbnailVisible;
+            settings.ThumbnailVisible = thumbnailWindow1.Visible;
+            thumbnailToolStripMenuItem.Checked = settings.ThumbnailVisible;
         }
 
         //////////////////////////////////////////////////////////////////////
+
+        private void ImageForm_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if(e.KeyChar == 27)
+            {
+                Close();
+            }
+        }
+    }
+
+    //////////////////////////////////////////////////////////////////////
+
+    public class Settings
+    {
+        [XmlElement(Type = typeof(XmlColor))]
+        public Color BackgroundColour = Color.Magenta;
+
+        public int GridSize = 16;
+        public InterpolationMode InterpolationMode = InterpolationMode.NearestNeighbor;
+        public bool ThumbnailVisible = true;
+        public int ThumbnailAlign = 0;
+
+        [XmlElement(Type = typeof(XmlColor))]
+        public Color GridColor1 = Color.LightGray;
+
+        [XmlElement(Type = typeof(XmlColor))]
+        public Color GridColor2 = Color.DarkGray;
     }
 }
